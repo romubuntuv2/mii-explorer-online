@@ -1,5 +1,6 @@
-import { Metadata } from "next";
 
+
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Wuhu Online Verse",
@@ -13,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body style={{margin:0}}>
         {children}
       </body>
     </html>

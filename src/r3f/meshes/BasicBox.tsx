@@ -12,7 +12,7 @@ const BasicBox = () => {
     })
 
   return (
-    <mesh ref={ref} position={[1,0,3]} scale={[1,2,4]} rotation={[0,8,122]} >
+    <mesh ref={ref} position={[0,0,0]} scale={[1,2,4]} rotation={[0,8,122]} >
         <boxGeometry />
         <meshBasicMaterial attach="material" args={[{ color:'red' }]} />
     </mesh>

@@ -1,15 +1,11 @@
 'use client'
-import BasicBox from '@/r3f/meshes/BasicBox'
-import { Canvas } from '@react-three/fiber'
 import React from 'react'
 import styled from 'styled-components'
 
 const HomePage = () => {
-  return (
+  return ( 
     <Container>
-      <Canvas>
-        <BasicBox />
-      </Canvas>
+
 
     </Container>
   )
@@ -17,9 +13,11 @@ const HomePage = () => {
 
 
 const Container = styled.div`
-  height: 90vh;
-  width: 90vw;
+  height: 100vh;
+  width: 100vw;
   background-color: antiquewhite;
 `
+
+
 
 export default HomePage
