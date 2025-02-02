@@ -2,11 +2,12 @@
 
 import MC_CustomSettings from '@/components/mii-creator/MC_CustomSettings'
 import MC_Menu from '@/components/mii-creator/MC_Menu'
-import CanvaContainer from '@/r3f/CanvaContainer'
+import CanvaMiiCreator from '@/r3f/canvasContainers/CanvaMiiCreator'
 import MiiRendered from '@/r3f/mii/MiiRendered'
 
 
 import { useMiiCreatorStore } from '@/stores/MiiCreatorStore'
+import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 import { FullPageContainer } from '@/styles/globalStyles'
 import React, { useEffect } from 'react'
 import styled, { keyframes } from 'styled-components'
@@ -17,17 +18,21 @@ import styled, { keyframes } from 'styled-components'
 
 const MiiCreatorPage = () => {
 
-
-  const { mii,fetchTypes, isLoading} = useMiiCreatorStore();
+  const {fetch, getInitIdByElement, types, isLoading} = usePocketBaseStore()
+  const {initMii, mii} = useMiiCreatorStore();
 
 
   useEffect(()=>{
-    fetchTypes();
+    fetch();
   },[])
 
+  useEffect(()=> {
+    if(isLoading) return
+    initMii(getInitIdByElement, types[0].id);
+  },[isLoading])
 
-
-  return (
+  return isLoading ? <PageContainer/>
+    : 
     <PageContainer>
       <MenuContainer>
         <MC_Menu  />
@@ -36,17 +41,9 @@ const MiiCreatorPage = () => {
 
       <CustomContainer>
         <LeftContainer>
-          <CanvaContainer width='100%' height='100%' position={[0,0,0]} >
-
-            
-            {/* <MultiTexture/> */}
-            {/* {currentMii == null ? <></> :<TestDecal/>} */}
-
-            {isLoading ? <></>
-            : <MiiRendered mii={mii} />}
-     
-            
-          </CanvaContainer>
+          <CanvaMiiCreator width='100%' height='100%' position={[0,0,0]} >
+            <MiiRendered mii={mii} />
+          </CanvaMiiCreator>
         </LeftContainer>
 
         <RightContainer>
@@ -56,7 +53,6 @@ const MiiCreatorPage = () => {
       </CustomContainer>
 
     </PageContainer>
-  )
 }
 
 

@@ -4,6 +4,7 @@ import React from 'react'
 import styled from 'styled-components'
 import SVGContainer from '../utils/SVGContainer'
 import { useMiiCreatorStore } from '@/stores/MiiCreatorStore'
+import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 
 
 
@@ -11,16 +12,16 @@ import { useMiiCreatorStore } from '@/stores/MiiCreatorStore'
 
 const MC_Menu = () => {
 
-
-  const { types, selectedType, setSelectedType } = useMiiCreatorStore();
+  const {types}= usePocketBaseStore()
+  const { selectedTypeID, setSelectedType } = useMiiCreatorStore();
 
 
   return (
     <MainContainer>
         <MenuContainer>
           {types.map((type) => {
-            const isselected:boolean = (selectedType == type)
-            return <MenuIcon key={type.id} isselected={isselected.toString()} onClick={()=>{setSelectedType(type)}}>
+            const isselected:boolean = (selectedTypeID == type.id)
+            return <MenuIcon key={type.id} isselected={isselected.toString()} onClick={()=>{setSelectedType(type.id)}}>
             <SVGContainer element={type}  />
           </MenuIcon>
           })}

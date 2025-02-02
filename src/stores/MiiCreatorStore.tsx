@@ -1,4 +1,3 @@
-import { pb } from '@/pocketbase/getPocketBase';
 import { Mii, MiiBody, MiiElement, MiiEyes, MiiFaceElement } from '@/r3f/mii/MiiRendered';
 import { RecordModel } from 'pocketbase'
 import { create } from 'zustand';
@@ -7,29 +6,33 @@ import { create } from 'zustand';
 
 interface MiiCreatorStore {
     mii:Mii,
-    types:RecordModel[],
-    isLoading:boolean,
-    selectedType:RecordModel|null,
-    assets:RecordModel[],
-    selectedElement:()=>MiiElement|MiiFaceElement|MiiEyes|MiiBody,
-    fetchTypes: () => Promise<void>,
-    setSelectedType:(newSelectedType:RecordModel) => void,
-    findAssetByType:(typeName:string) => RecordModel[],
-    changeColor:(color:string)=>void,
-    changeVerticalPos:(valuel:number) => void,
-    changeScale:(value:number)=>void,
-    changeDistBetw:(value:number)=>void,
-    changeRotation:(value:number)=>void,
-    changeShrink:(value:number)=>void,
-    changeElement:(value:RecordModel) => void,
+    selectedTypeID:string,
+    selectedElement:(getType:(id:string) => (RecordModel|undefined))=>MiiElement|MiiFaceElement|MiiEyes|MiiBody,
+    initMii: (getInit:(typeName:string)=>string, initTypeID:string) => void,
+    setSelectedType:(newTypeID:string) => void,
+    changeColor:(color:string,getType:(id:string) => (RecordModel|undefined))=>void,
+    changeVerticalPos:(valuel:number,getType:(id:string) => (RecordModel|undefined)) => void,
+    changeScale:(value:number,getType:(id:string) => (RecordModel|undefined))=>void,
+    changeDistBetw:(value:number,getType:(id:string) => (RecordModel|undefined))=>void,
+    changeRotation:(value:number,getType:(id:string) => (RecordModel|undefined))=>void,
+    changeShrink:(value:number,getType:(id:string) => (RecordModel|undefined))=>void,
+    changeElement:(value:string, getType:(id:string) => (RecordModel|undefined)) => void,
 }
 
 export const useMiiCreatorStore = create<MiiCreatorStore>((set,get) => ({
     mii:{
+        mustache:{
+            shrink:0.5,
+            rotation:0.5,
+            elementID:"",
+            verticalPos: 0,
+            scale: 0,
+            color:'#6C7070',
+        },
         glasses:{
             shrink:0.5,
             rotation:0.5,
-            element: {} as RecordModel,
+            elementID:"",
             verticalPos: 0,
             scale: 0,
             color:'#6C7070',
@@ -37,7 +40,7 @@ export const useMiiCreatorStore = create<MiiCreatorStore>((set,get) => ({
         mouth:{
             shrink:0.5,
             rotation:0.5,
-            element: {} as RecordModel,
+            elementID:"",
             verticalPos: 0,
             scale: 0,
             color:'#6C7070',
@@ -45,14 +48,14 @@ export const useMiiCreatorStore = create<MiiCreatorStore>((set,get) => ({
         nose:{            
             shrink:0.5,
             rotation:0.5,
-            element: {} as RecordModel,
+            elementID:"",
             verticalPos: 0,
             scale: 0,
             color:'#6C7070',
         },
         eyebrows:{
             shrink:0.5,
-            element: {} as RecordModel,
+            elementID:"",
             distanceBetween:0.5,
             rotation:0.5,
             verticalPos: 0,
@@ -61,166 +64,141 @@ export const useMiiCreatorStore = create<MiiCreatorStore>((set,get) => ({
         },
         eyes: {
             shrink:0.5,
-            element: {} as RecordModel,
+            elementID:"",
             distanceBetween:0.5,
             rotation:0.5,
             verticalPos: 0,
             scale: 0,
             color:'#6C7070',
         },
-        head: {element: {} as RecordModel, color: '#6C7070'},
-        human:{element: {} as RecordModel, upColor: '#b83d1b', downColor:'#34b9b7S'},
-        hair: {element: {} as RecordModel, color: '#6C7070'},
-        bear: {element: {} as RecordModel, color: '#6C7070'},
-        makeups: {element: {} as RecordModel, color: '#6C7070'},
-        wrinkles: {element: {} as RecordModel, color: '#6C7070'},
-        mustache: {element: {} as RecordModel, color: '#6C7070'},
+        head: {elementID:"", color: '#6C7070'},
+        human:{elementID:"", upColor: '#b83d1b', downColor:'#34b9b7S'},
+        hair: {elementID:"", color: '#6C7070'},
+        bear: {elementID:"", color: '#6C7070'},
+        makeups: {elementID:"", color: '#6C7070'},
+        wrinkles: {elementID:"", color: '#6C7070'},
+
     },
-    isLoading:true,
-    types:[],
-    selectedType:null,
-    assets:[],
-    selectedElement:()=>{
-        const {selectedType, mii} = get();
+    selectedTypeID:"",
+    selectedElement:(getType:(id:string) => (RecordModel|undefined))=>{
+        const {selectedTypeID, mii} = get();
+        const selectedType = getType(selectedTypeID)
         const elementName = String(selectedType?.name).toLowerCase();
+        console.log(mii)
         return (mii as Mii)[elementName as keyof Mii]
     },
-    fetchTypes: async() => { 
-        const {findAssetByType}=get();
-        //FETCH ELEMENTS
-        const fetechedTypes = await pb.collection('TypeElements').getFullList({sort: '+position'});
-        const fetchedAssets = await pb.collection('AssetElements').getFullList();
-        set({types:fetechedTypes, assets: fetchedAssets})
-
-
+    initMii: (getInit:(typeName:string)=>string, initTypeID:string) => { 
         //INIT MII
-        const body = findAssetByType("Human")[0];
-        const nose = findAssetByType("Nose")[0];
-        const glasses = findAssetByType("Glasses")[0];
-        const head = findAssetByType("Head")[0];
-        const hair = findAssetByType("Hair")[0];
-        const eyebrow = findAssetByType("Eyebrows")[0];
-        const eye = findAssetByType("Eyes")[0];
-        const makeup = findAssetByType("Makeups")[0];
-        const wrinkle = findAssetByType("Wrinkles")[0];
-        const bear = findAssetByType("Bear")[0];
-        const mustache = findAssetByType("Mustache")[0];
-        const mouth = findAssetByType("Mouth")[0];
+        const bodyID = getInit("Human");
+        const noseID = getInit("Nose");
+        const glassesID = getInit("Glasses");
+        const headID = getInit("Head");
+        const hairID = getInit("Hair");
+        const eyebrowID = getInit("Eyebrows");
+        const eyeID = getInit("Eyes");
+        const makeupID = getInit("Makeups");
+        const wrinkleID = getInit("Wrinkles");
+        const bearID = getInit("Bear");
+        const mustacheID = getInit("Mustache");
+        const mouthID = getInit("Mouth");
         const initMii:Mii = {
+        mustache:{
+                shrink:0.5,
+                rotation:0.5,
+                elementID:mustacheID,
+                verticalPos: 0.2,
+                scale: 0.5,
+                color:'#6C7070',
+            },
         glasses:{
             shrink:0.5,
             rotation:0.5,
-            element: glasses,
-            verticalPos: 0,
+            elementID: glassesID,
+            verticalPos: 0.45,
             scale: 0,
             color:'#6C7070',
         },
         nose:{            
             shrink:0.5,
             rotation:0.5,
-            element: nose,
-            verticalPos: 0,
-            scale: 0,
+            elementID: noseID,
+            verticalPos: 0.2,
+            scale: 0.25,
             color:'#6C7070',
         },
         mouth:{
             shrink:0.5,
-            element:mouth,
-            verticalPos:0,
+            elementID:mouthID,
+            verticalPos:0.1,
             rotation:0.5,
-            scale:0.5,
+            scale:0.2,
             color:'#6C7070'
         },
         eyebrows:{
             shrink:0.5,
-            element:eyebrow,
-            verticalPos:0.5,
+            elementID:eyebrowID,
+            verticalPos:0.6,
             rotation:0.5,
-            distanceBetween:0.5,
-            scale:0.5,
+            distanceBetween:0.3,
+            scale:0.4,
             color:'#6C7070'
         },
         eyes:{
             shrink:0.5,
-            element:eye,
-            verticalPos:0.5,
+            elementID:eyeID,
+            verticalPos:0.3,
             rotation:0.5,
-            distanceBetween:0.5,
-            scale:0.5,
+            distanceBetween:0.3,
+            scale:0.3,
             color:'#6C7070'
         },
-        bear: {element: bear, color: '#6C7070'},
-        head:{element: head, color: '#7f463c'},
-        human:{element: body, upColor: '#b83d1b', downColor:'#34b9b7S'},
-        hair:{element: hair, color: '#8ecaca'},
-        makeups: {element: makeup, color: '#6C7070'},
-        wrinkles: {element: wrinkle, color: '#6C7070'},
-        mustache: {element: mustache, color: '#6C7070'},
+        bear: {elementID: bearID, color: '#6C7070'},
+        head:{elementID: headID, color: '#7f463c'},
+        human:{elementID: bodyID, upColor: '#b83d1b', downColor:'#34b9b7S'},
+        hair:{elementID: hairID, color: '#8ecaca'},
+        makeups: {elementID: makeupID, color: '#6C7070'},
+        wrinkles: {elementID: wrinkleID, color: '#6C7070'},
+
         }
 
-        set({isLoading:false, mii:initMii, selectedType:fetechedTypes[0]})
+        set({mii:initMii, selectedTypeID:initTypeID})
     },
-    setSelectedType: (newSelectedType:RecordModel) => {set({selectedType:newSelectedType})},
-    findAssetByType:(typeName:string) => {
-        const {types, assets} = get();
-        const typeID = types.find((type) => type.name === typeName)?.id;
-        const foundedAssets = assets.filter(asset => asset.type === typeID);
-        return foundedAssets
-    },
-    changeColor:(color:string) => {
-        const {selectedType,mii} = get();
-
-        const name = String(selectedType?.name).toLowerCase();
-        (mii[name as keyof Mii] as MiiElement).color = color;
-
+    setSelectedType: (newTypeID:string) => {set({selectedTypeID:newTypeID})},
+    changeColor:(color:string, getType:(id:string) => (RecordModel|undefined)) => {
+        const {selectedElement ,mii} = get();
+        (selectedElement(getType) as MiiElement).color = color;
         set({mii:mii})
     },
-    changeVerticalPos:(value:number) => {
-        const {selectedType,mii} = get();
-
-        const name = String(selectedType?.name).toLowerCase();
-        (mii[name as keyof Mii] as MiiFaceElement).verticalPos = value;
-
+    changeVerticalPos:(value:number, getType:(id:string) => (RecordModel|undefined)) => {
+        const {selectedElement,mii} = get();
+        (selectedElement(getType) as MiiFaceElement).verticalPos = value;
         set({mii:mii})
     },
-    changeScale:(value:number) =>{
-        const {selectedType,mii} = get();
-
-        const name = String(selectedType?.name).toLowerCase();
-        (mii[name as keyof Mii] as MiiFaceElement).scale = value;
-
+    changeScale:(value:number, getType:(id:string) => (RecordModel|undefined)) =>{
+        const {selectedElement,mii} = get();
+        (selectedElement(getType) as MiiFaceElement).scale = value;
         set({mii:mii})
     },
-    changeDistBetw:(value:number) =>{
-        const {selectedType,mii} = get();
-
-        const name = String(selectedType?.name).toLowerCase();
-        (mii[name as keyof Mii] as MiiEyes).distanceBetween = value;
-
+    changeDistBetw:(value:number, getType:(id:string) => (RecordModel|undefined)) =>{
+        const {selectedElement,mii} = get();
+        (selectedElement(getType) as MiiEyes).distanceBetween = value;
         set({mii:mii})
     },
-    changeRotation:(value:number) =>{
-        const {selectedType,mii} = get();
-
-        const name = String(selectedType?.name).toLowerCase();
-        (mii[name as keyof Mii] as MiiFaceElement).rotation = value;
-
+    changeRotation:(value:number, getType:(id:string) => (RecordModel|undefined)) =>{
+        const {selectedElement,mii} = get();
+        (selectedElement(getType) as MiiFaceElement).rotation = value;
         set({mii:mii})
     },
-    changeShrink:(value:number) =>{
-        const {selectedType,mii} = get();
-
-        const name = String(selectedType?.name).toLowerCase();
-        (mii[name as keyof Mii] as MiiFaceElement).shrink = value;
-
+    changeShrink:(value:number, getType:(id:string) => (RecordModel|undefined)) =>{
+        const {selectedElement,mii} = get();
+        (selectedElement(getType) as MiiFaceElement).shrink = value;
         set({mii:mii})
     },
-    changeElement:(value:RecordModel) => {
-        const {selectedType,mii} = get();
+    changeElement:(elementID:string, getType:(id:string) => (RecordModel|undefined)) => {
+        const {selectedElement,mii} = get();
 
-        const name = String(selectedType?.name).toLowerCase();
-        const miiElement = mii[name as keyof Mii] as MiiElement | MiiFaceElement;
-        miiElement.element = value;
+        const miiElement = selectedElement(getType)  as MiiElement | MiiFaceElement;
+        miiElement.elementID = elementID;
 
         set({mii:mii})
     }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Svg, useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 
@@ -6,10 +6,16 @@ import * as THREE from 'three'
 
 import { MiiFaceElement } from '../MiiRendered'
 import { pb } from '@/pocketbase/getPocketBase'
+import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 
 
 
 const FaceAsset = ({faceElement,bone}:{faceElement:MiiFaceElement,bone:THREE.Object3D}) => {
+
+    const {getAsset} = usePocketBaseStore();
+    const element = useMemo(()=> {
+        return getAsset(faceElement.elementID)
+    }, [faceElement.elementID, getAsset])
 
   const groupRef = useRef<THREE.Group>(null);
   const svgRef = useRef<THREE.Object3D>(null)
@@ -64,7 +70,7 @@ const FaceAsset = ({faceElement,bone}:{faceElement:MiiFaceElement,bone:THREE.Obj
   return <group scale={1}  position={[0,handleVerticalPosition(faceElement.verticalPos),25]} ref={groupRef} >
   <Svg ref={svgRef}
   scale={faceElement.scale} 
-  src={pb.files.getURL(faceElement.element,faceElement.element.svg)} />
+  src={pb.files.getURL(element,element.svg)} />
   </group>
 }
 

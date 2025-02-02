@@ -3,12 +3,18 @@ import { MiiElement } from '../MiiRendered'
 import { useGLTF } from '@react-three/drei';
 import { BufferGeometry, DoubleSide, Group, Material, Mesh, Object3D } from 'three';
 import { pb } from '@/pocketbase/getPocketBase';
+import { usePocketBaseStore } from '@/stores/PocketBaseStore';
 
 
 const HairAsset = ({miiElement, bone}:{miiElement:MiiElement, bone:Object3D}) => {
 
+    const {getAsset} = usePocketBaseStore();
+    const element = useMemo(()=> {
+        return getAsset(miiElement.elementID)
+    }, [miiElement.elementID, getAsset])
+
     const groupRef = useRef<Group>(null)
-    const {scene} = useGLTF(pb.files.getURL(miiElement.element, miiElement.element.glb));
+    const {scene} = useGLTF(pb.files.getURL(element, element.glb));
 
     const assetItems = useMemo(()=> {
         const items:{geometry:BufferGeometry, material:Material|Material[]}[] = [];
@@ -35,10 +41,9 @@ const HairAsset = ({miiElement, bone}:{miiElement:MiiElement, bone:Object3D}) =>
   return <group ref={groupRef} scale={80} position={[0,60,0]} >
     <mesh
         geometry={assetItems.geometry}
-        castShadow
-        
+        castShadow   
     >
-        <meshStandardMaterial transparent={miiElement.element.name == "Hair_54"?true:false} opacity={miiElement.element.name == "Hair_54"?0:1} side={DoubleSide} color={miiElement.color} />
+        <meshStandardMaterial transparent={element.name == "Hair_54"?true:false} opacity={element.name == "Hair_54"?0:1} side={DoubleSide} color={miiElement.color} />
     </mesh>
     </group>
 

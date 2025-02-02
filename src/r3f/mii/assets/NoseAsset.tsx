@@ -4,11 +4,17 @@ import { Group, Material, Mesh, Object3D, BufferGeometry, MeshStandardMaterial, 
 import { useGLTF } from '@react-three/drei'
 import { TransformInterpolate } from '@/utils/utilsFunctions'
 import { pb } from '@/pocketbase/getPocketBase'
+import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 
 const NoseAsset = ({miiElement, bone}:{miiElement:MiiFaceElement, bone:Object3D}) => {
 
+    const {getAsset} = usePocketBaseStore();
+    const element = useMemo(()=> {
+        return getAsset(miiElement.elementID)
+    }, [miiElement.elementID, getAsset])
+
     const groupRef = useRef<Group>(null)
-    const {scene} = useGLTF(pb.files.getURL(miiElement.element, miiElement.element.glb));
+    const {scene} = useGLTF(pb.files.getURL(element, element.glb));
 
     const [material, setMaterial] = useState<MeshStandardMaterial>()
 
@@ -43,11 +49,11 @@ const NoseAsset = ({miiElement, bone}:{miiElement:MiiFaceElement, bone:Object3D}
     },[miiElement.color,material])
 
     const handleVerticalPosition = (input:number) => {
-        return TransformInterpolate(input, [0,1], [10,50])
+        return TransformInterpolate(input, [0,1], [10,40])
     }
 
     const handleScale = (inputGlobalScale:number, inputShrink:number) => {
-      const globalScale = TransformInterpolate(inputGlobalScale, [0,1], [80,120])
+      const globalScale = TransformInterpolate(inputGlobalScale, [0,1], [40,120])
       const shrinkScale = TransformInterpolate(inputShrink, [0,1], [-25,25])
       const scale:[number, number, number] = [globalScale,globalScale+shrinkScale,globalScale]
       return scale
@@ -57,7 +63,7 @@ const NoseAsset = ({miiElement, bone}:{miiElement:MiiFaceElement, bone:Object3D}
   return  <group ref={groupRef} 
 //   scale={100} 
     scale={handleScale(miiElement.scale, miiElement.shrink)} 
-    position={[0,handleVerticalPosition(miiElement.verticalPos),25]} >
+    position={[0,handleVerticalPosition(miiElement.verticalPos),22]} >
     {assetItems.map((item, index) => (
     <mesh 
         key={index}

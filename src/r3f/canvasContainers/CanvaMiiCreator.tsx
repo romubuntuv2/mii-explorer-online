@@ -4,7 +4,7 @@ import { Canvas } from '@react-three/fiber'
 import React from 'react'
 import styled from 'styled-components'
 
-const CanvaContainer = ({width, height, position, children}:{width:string, height:string, position:[number, number, number],children:JSX.Element}) => {
+const CanvaMiiCreator = ({width, height, position, children}:{width:string, height:string, position:[number, number, number],children:JSX.Element}) => {
   return (
     <Container width={width} height={height}>
       <Canvas shadows>
@@ -42,4 +42,4 @@ const Container = styled.div.attrs<{ width: string; height: string }>(props => (
 
 
 
-export default CanvaContainer
+export default CanvaMiiCreator

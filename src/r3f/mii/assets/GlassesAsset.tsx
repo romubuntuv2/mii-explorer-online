@@ -7,12 +7,19 @@ import * as THREE from 'three'
 import { MiiFaceElement } from '../MiiRendered'
 import { TransformInterpolate } from '@/utils/utilsFunctions'
 import { pb } from '@/pocketbase/getPocketBase'
+import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 
 
 
 const GlassesAsset = ({faceElement,bone}:{faceElement:MiiFaceElement,bone:THREE.Object3D}) => {
+
+    const {getAsset} = usePocketBaseStore();
+    const element = useMemo(()=> {
+        return getAsset(faceElement.elementID)
+    }, [faceElement.elementID, getAsset])
+
   const groupRef = useRef<THREE.Group>(null);
-    const {scene} = useGLTF(pb.files.getURL(faceElement.element, faceElement.element.glb));
+    const {scene} = useGLTF(pb.files.getURL(element, element.glb));
 
     const assetItems = useMemo(()=> {
         const items:{geometry:THREE.BufferGeometry, material:THREE.Material|THREE.Material[]}[] = [];
@@ -56,7 +63,7 @@ const GlassesAsset = ({faceElement,bone}:{faceElement:MiiFaceElement,bone:THREE.
   scale={handleScale(faceElement.scale)}
   position={[0,handleVerticalPosition(faceElement.verticalPos),25]} 
   ref={groupRef} >
-    {faceElement.element.name=="Glasses_1"?<></>:
+    {element.name=="Glasses_1"?<></>:
     assetItems.map((item, index) => (
     <mesh 
         key={index}

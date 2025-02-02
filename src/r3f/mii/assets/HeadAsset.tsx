@@ -5,14 +5,20 @@ import { BufferGeometry, Material } from 'three'
 import * as THREE from 'three'
 import { pb } from '@/pocketbase/getPocketBase'
 import { MiiElement } from '../MiiRendered'
+import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 
 
 
 const HeadAsset = ({miiElement, bone}:{miiElement:MiiElement, bone:THREE.Object3D}) => {
 
+    const {getAsset} = usePocketBaseStore();
+    const element = useMemo(()=> {
+        return getAsset(miiElement.elementID)
+    }, [miiElement.elementID, getAsset])
 
     const groupRef = useRef<THREE.Group>(null)
-    const {scene} = useGLTF(pb.files.getURL(miiElement.element, miiElement.element.glb));
+    const {scene:primScene} = useGLTF(pb.files.getURL(element, element.glb));
+    const scene = primScene.clone();
 
     const assetItems = useMemo(()=> {
         const items:{geometry:BufferGeometry, material:Material|Material[]}[] = [];
@@ -42,7 +48,6 @@ const HeadAsset = ({miiElement, bone}:{miiElement:MiiElement, bone:THREE.Object3
     <mesh
         geometry={assetItems.geometry}
         castShadow
-        
     >
         <meshStandardMaterial side={THREE.DoubleSide} color={miiElement.color} />
     </mesh>

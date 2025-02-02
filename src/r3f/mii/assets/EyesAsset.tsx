@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Center, Svg } from '@react-three/drei'
 import * as THREE from 'three'
 
@@ -7,10 +7,16 @@ import * as THREE from 'three'
 import { MiiEyes } from '../MiiRendered'
 import { TransformInterpolate } from '@/utils/utilsFunctions'
 import { pb } from '@/pocketbase/getPocketBase'
+import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 
 
 
 const EyesAsset = ({eyesElement,bone}:{eyesElement:MiiEyes,bone:THREE.Object3D}) => {
+
+    const {getAsset} = usePocketBaseStore();
+    const element = useMemo(()=> {
+        return getAsset(eyesElement.elementID)
+    }, [eyesElement.elementID, getAsset])
 
   const groupRef = useRef<THREE.Group>(null);
   const svgRef1 = useRef<THREE.Object3D>(null)
@@ -57,7 +63,7 @@ const EyesAsset = ({eyesElement,bone}:{eyesElement:MiiEyes,bone:THREE.Object3D})
         material.color = new THREE.Color(eyesElement.color)
       })
     }
-  },[eyesElement.element])
+  },[eyesElement.elementID])
 
   useEffect(()=> {
     meshesMaterial.map((material) => {
@@ -66,7 +72,7 @@ const EyesAsset = ({eyesElement,bone}:{eyesElement:MiiEyes,bone:THREE.Object3D})
   },[eyesElement.color])
 
 
-
+  
   const handleVerticalPosition = (input:number) => {
     return TransformInterpolate(input, [0,1], [10,50])
   }
@@ -83,7 +89,7 @@ const EyesAsset = ({eyesElement,bone}:{eyesElement:MiiEyes,bone:THREE.Object3D})
   }
 
   const handleRotation = (input:number) => {
-    return TransformInterpolate(input, [0,1], [-Math.PI,Math.PI])
+    return TransformInterpolate(input, [0,1], [-Math.PI/4,Math.PI/4])
   }
 
 
@@ -93,12 +99,12 @@ const EyesAsset = ({eyesElement,bone}:{eyesElement:MiiEyes,bone:THREE.Object3D})
   return <group scale={handleScale(eyesElement.scale, eyesElement.shrink)}  position={[0,handleVerticalPosition(eyesElement.verticalPos),25]} ref={groupRef} >
   <Center>
   <Svg ref={svgRef1} position={[-handleDistBetw(eyesElement.distanceBetween),0,0]} rotation={[0,Math.PI,handleRotation(eyesElement.rotation)]}
-  src={pb.files.getURL(eyesElement.element,eyesElement.element.svg)} />
+  src={pb.files.getURL(element,element.svg)} />
 
 
 
   <Svg ref={svgRef2} position={[handleDistBetw(eyesElement.distanceBetween),0,0]} rotation={[0,0,handleRotation(eyesElement.rotation)]}
-  src={pb.files.getURL(eyesElement.element,eyesElement.element.svg)} />
+  src={pb.files.getURL(element,element.svg)} />
   </Center>
   </group>
 }

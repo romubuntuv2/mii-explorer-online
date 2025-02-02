@@ -1,14 +1,21 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import { BufferGeometry, Group, Material, Mesh, Object3D } from 'three';
-import { MiiElement } from '../MiiRendered';
+import { MiiFaceElement } from '../MiiRendered';
 import { useGLTF } from '@react-three/drei';
 import { pb } from '@/pocketbase/getPocketBase';
+import { usePocketBaseStore } from '@/stores/PocketBaseStore';
+import { TransformInterpolate } from '@/utils/utilsFunctions';
 
 
-const MustacheAsset = ({miiElement, bone}:{miiElement:MiiElement, bone:Object3D}) => {
+const MustacheAsset = ({miiElement, bone}:{miiElement:MiiFaceElement, bone:Object3D}) => {
+
+    const {getAsset} = usePocketBaseStore();
+    const element = useMemo(()=> {
+        return getAsset(miiElement.elementID)
+    }, [miiElement.elementID, getAsset])
 
     const groupRef = useRef<Group>(null)
-    const {scene} = useGLTF(pb.files.getURL(miiElement.element, miiElement.element.glb));
+    const {scene} = useGLTF(pb.files.getURL(element, element.glb));
 
     const assetItems = useMemo(()=> {
         const items:{geometry:BufferGeometry, material:Material|Material[]}[] = [];
@@ -32,13 +39,25 @@ const MustacheAsset = ({miiElement, bone}:{miiElement:MiiElement, bone:Object3D}
     }
     },[bone])
 
-  return <group ref={groupRef} scale={100} position={[0,20,25]} >
-    {miiElement.element.name == "Mustache_1" ? <></>:
+      const handleVerticalPosition = (input:number) => {
+        return TransformInterpolate(input, [0,1],[0,50])
+      }
+    
+      const handleScale = (inputGlobalScale:number) => {
+        const globalScale = TransformInterpolate(inputGlobalScale, [0,1], [80,120])
+        const scale:[number, number, number] = [globalScale,globalScale,globalScale]
+        return scale
+      }
+    
+
+  return <group ref={groupRef} 
+  scale={handleScale(miiElement.scale)}
+  position={[0,handleVerticalPosition(miiElement.verticalPos),25]} 
+  >
+    {element.name == "Mustache_1" ? <></>:
     <mesh
         geometry={assetItems.geometry}
         material={assetItems.material}
-        castShadow
-        receiveShadow
     >
     </mesh>
     }

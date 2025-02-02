@@ -3,12 +3,18 @@ import { MiiElement } from '../MiiRendered';
 import { BufferGeometry, DoubleSide, Group, Material, Mesh, Object3D } from 'three';
 import { useGLTF } from '@react-three/drei';
 import { pb } from '@/pocketbase/getPocketBase';
+import { usePocketBaseStore } from '@/stores/PocketBaseStore';
 
 
 const BearAsset  = ({miiElement, bone}:{miiElement:MiiElement, bone:Object3D}) => {
 
+    const {getAsset} = usePocketBaseStore();
+    const element = useMemo(()=> {
+        return getAsset(miiElement.elementID)
+    }, [miiElement.elementID, getAsset])
+
     const groupRef = useRef<Group>(null)
-    const {scene} = useGLTF(pb.files.getURL(miiElement.element, miiElement.element.glb));
+    const {scene} = useGLTF(pb.files.getURL(element, element.glb));
 
     const assetItems = useMemo(()=> {
         const items:{geometry:BufferGeometry, material:Material|Material[]}[] = [];
@@ -19,8 +25,7 @@ const BearAsset  = ({miiElement, bone}:{miiElement:MiiElement, bone:Object3D}) =
                     material:(child as Mesh).material
                 })
             }
-        })
-        console.log(items)
+        }) 
         return items[0];
     }, [scene])
 
@@ -39,7 +44,7 @@ const BearAsset  = ({miiElement, bone}:{miiElement:MiiElement, bone:Object3D}) =
         castShadow
         receiveShadow
     >
-        <meshBasicMaterial transparent={miiElement.element.name == "Bear_1"?true:false} opacity={miiElement.element.name == "Bear_1"?0:1} side={DoubleSide} color={miiElement.color} />
+        <meshBasicMaterial transparent={element.name == "Bear_1"?true:false} opacity={element.name == "Bear_1"?0:1} side={DoubleSide} color={miiElement.color} />
     </mesh>
     </group>
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Center, Svg } from '@react-three/drei'
 import * as THREE from 'three'
 
@@ -6,10 +6,16 @@ import * as THREE from 'three'
 import { MiiEyes } from '../MiiRendered'
 import { TransformInterpolate } from '@/utils/utilsFunctions'
 import { pb } from '@/pocketbase/getPocketBase'
+import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 
 
 
 const EyebrowsAsset = ({eyesElement,bone}:{eyesElement:MiiEyes,bone:THREE.Object3D}) => {
+
+  const {getAsset} = usePocketBaseStore();
+  const element = useMemo(()=> {
+      return getAsset(eyesElement.elementID)
+  }, [eyesElement.elementID, getAsset])
 
   const groupRef = useRef<THREE.Group>(null);
   const svgRef1 = useRef<THREE.Object3D>(null)
@@ -46,7 +52,7 @@ const EyebrowsAsset = ({eyesElement,bone}:{eyesElement:MiiEyes,bone:THREE.Object
         material.color = new THREE.Color(eyesElement.color)
       })
     }
-  },[eyesElement.element])
+  },[eyesElement.elementID])
 
   useEffect(()=> {
     meshesMaterial.map((material) => {
@@ -57,31 +63,35 @@ const EyebrowsAsset = ({eyesElement,bone}:{eyesElement:MiiEyes,bone:THREE.Object
 
 
   const handleVerticalPosition = (input:number) => {
-    return TransformInterpolate(input, [0,1], [10,80])
+    return TransformInterpolate(input, [0,1], [0,55])
   }
-
-  const handleScale = (input:number) => {
-    return TransformInterpolate(input, [0,1], [0.2,0.9])
+  const handleScale = (inputGlobalScale:number, inputShrink:number) => {
+    const globalScale = TransformInterpolate(inputGlobalScale, [0,1], [0.2,0.9])
+    const shrinkScale = TransformInterpolate(inputShrink, [0,1], [-0.2,0.3])
+    const scale:[number, number, number] = [globalScale,globalScale+shrinkScale,globalScale]
+    return scale
   }
 
   const handleDistBetw = (input:number) => {
-    return TransformInterpolate(input, [0,1], [5,30])
+    return TransformInterpolate(input, [0,1], [-5,30])
   }
 
-
+  const handleRotation = (input:number) => {
+    return TransformInterpolate(input, [0,1], [-Math.PI,Math.PI])
+  }
   
 
 
-  return <group scale={handleScale(eyesElement.scale)}  position={[0,handleVerticalPosition(eyesElement.verticalPos),25]} ref={groupRef} >
-  {eyesElement.element.name === "Eyebrows_24"?<></>:
+  return <group scale={handleScale(eyesElement.scale,eyesElement.shrink)}  position={[0,handleVerticalPosition(eyesElement.verticalPos),25]} ref={groupRef} >
+  {element.name === "Eyebrows_24"?<></>:
   <Center>
-  <Svg ref={svgRef1} position={[-handleDistBetw(eyesElement.distanceBetween),0,0]} rotation={[0,Math.PI,0]}
-  src={pb.files.getURL(eyesElement.element,eyesElement.element.svg)} />
+  <Svg ref={svgRef1} position={[-handleDistBetw(eyesElement.distanceBetween),0,0]} rotation={[0,Math.PI,handleRotation(eyesElement.rotation)]}
+  src={pb.files.getURL(element,element.svg)} />
 
 
 
-  <Svg ref={svgRef2} position={[handleDistBetw(eyesElement.distanceBetween),0,0]} 
-  src={pb.files.getURL(eyesElement.element,eyesElement.element.svg)} />
+  <Svg ref={svgRef2} position={[handleDistBetw(eyesElement.distanceBetween),0,0]} rotation={[0,0,handleRotation(eyesElement.rotation)]}
+  src={pb.files.getURL(element,element.svg)} />
 
   </Center>
   }

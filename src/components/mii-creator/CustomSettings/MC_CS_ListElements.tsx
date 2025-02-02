@@ -1,5 +1,6 @@
 import SVGContainer from '@/components/utils/SVGContainer'
 import { useMiiCreatorStore } from '@/stores/MiiCreatorStore'
+import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 import { MyColors } from '@/styles/colors'
 import { MC_StyleContainer } from '@/styles/globalStyles'
 import { RecordModel } from 'pocketbase'
@@ -8,13 +9,14 @@ import styled from 'styled-components'
 
 const MC_CS_ListElements = ({list}:{list:RecordModel[]}) => {
 
+  const {getType} = usePocketBaseStore();
   const {selectedElement, changeElement} = useMiiCreatorStore();
 
   return (
     <MainContainer>
         {list.map((element, index)=> {
-            const selected = element==selectedElement().element? "isTrue":"caca"
-            return <ElementIcon key={index} selected={selected} onClick={()=> {changeElement(element)}} >
+            const selected = element.id==selectedElement(getType).elementID? "isTrue":"caca"
+            return <ElementIcon key={index} selected={selected} onClick={()=> {changeElement(element.id,getType)}} >
             <SVGContainer element={element} />
             </ElementIcon>
         })}

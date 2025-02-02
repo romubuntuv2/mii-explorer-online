@@ -2,7 +2,6 @@
 import React, { Suspense, useEffect, useRef } from 'react'
 import { useGLTF, useAnimations, useFBX } from '@react-three/drei'
 import * as THREE from 'three'
-import { RecordModel } from 'pocketbase'
 import BodyAsset from './assets/BodyAsset'
 import HairAsset from './assets/HairAsset'
 import BearAsset from './assets/BearAsset'
@@ -23,19 +22,19 @@ export interface MiiEyes extends MiiFaceElement {
 }
 
 export interface MiiBody {
-  element:RecordModel,
+  elementID:string,
   upColor:string,
   downColor:string
 }
 
 export interface MiiElement {
-  element:RecordModel, 
+  elementID:string, 
   color:string
 }
 
 
 export interface Mii {
-  mustache:MiiElement,
+  mustache:MiiFaceElement,
   wrinkles:MiiElement,
   makeups:MiiElement,
   bear:MiiElement,
@@ -50,31 +49,30 @@ export interface Mii {
 }
 
 
-const MiiRendered = ({mii}:{mii:Mii}) => {
+const MiiRendered = ({mii, animationString, cloned}:{mii:Mii, animationString:string, cloned?:boolean}) => {
 
 
 
   // MAIN ARMATURE
   const group = useRef<THREE.Group>(null)
-  const { nodes:MainNodes, animations } = useGLTF('/models/Armature_Plane.glb')
+  const { nodes:MainNodes} = useGLTF('/models/Armature_Plane.glb')
   const MainSkeleton = (MainNodes.Plane as THREE.SkinnedMesh).skeleton;
 
   //ANIMATIONS
-  const {animations:DeadAnim} = useFBX("/animations/Dying.fbx")
-  const { actions } = useAnimations(animations, group)
-  const { actions:DeadActions } = useAnimations(DeadAnim, group)
+  const {animations:AllAnimations} = useFBX("/animations/Animations.fbx");
+  const { actions } = useAnimations(AllAnimations, group)
+
   useEffect(()=> {
-    if(true) {
-    actions['WalkAnimation']?.play();
-    } else {
-    DeadActions['mixamo.com']?.play();
-    }
-  })
+    console.log(animationString)
+    actions[animationString]?.reset().fadeIn(0.5).play();
+  },[animationString])
+
+
 
   return (
     <group ref={group} dispose={null}>
       <group name="Scene">
-        <group name="lp" position={[0,-2,0]} rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
+        <group name="lp" position={[0,-2,0]}  scale={0.01}>
 
 
   

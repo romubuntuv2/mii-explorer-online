@@ -1,37 +1,42 @@
 import { MiiEyes, MiiFaceElement } from '@/r3f/mii/MiiRendered'
 import { useMiiCreatorStore } from '@/stores/MiiCreatorStore'
+import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 import { MC_StyleContainer } from '@/styles/globalStyles'
 import { FindMovesSVG } from '@/svgs/mii-creator/movesSVG'
+import { RecordModel } from 'pocketbase'
 import React from 'react'
 import styled from 'styled-components'
 
 const MC_CS_Sliders = () => {
 
-    const {selectedType, selectedElement, changeDistBetw, changeVerticalPos, changeRotation, changeShrink, changeScale} = useMiiCreatorStore();
+    const {getType} = usePocketBaseStore()
+    const {selectedElement, selectedTypeID, changeDistBetw, changeVerticalPos, changeRotation, changeShrink, changeScale} = useMiiCreatorStore();
 
 
 return <MainContainer>
             <SlidersContainer>
-                <Slider startIcon='down' endIcon='up' value={(selectedElement() as MiiFaceElement).verticalPos} onChangeFunction={changeVerticalPos} />
-                <Slider startIcon='min' endIcon='max' value={(selectedElement() as MiiFaceElement).scale} onChangeFunction={changeScale}/>
-                {selectedType?.name=="Eyes" || selectedType?.name=="Eyebrows" ?<Slider startIcon='near' endIcon='far' value={(selectedElement() as MiiEyes).distanceBetween} onChangeFunction={changeDistBetw}/> :<></>} 
-                {selectedType?.name=="Eyes" || selectedType?.name=="Eyebrows" ?<Slider startIcon='rotClock' endIcon='rotAntiClock'value={(selectedElement() as MiiFaceElement).rotation} onChangeFunction={changeRotation}/>:<></>}
-                <Slider startIcon='shrink' endIcon='stretch' value={(selectedElement() as MiiFaceElement).shrink}  onChangeFunction={changeShrink}/>
+                <Slider startIcon='down' endIcon='up' value={(selectedElement(getType) as MiiFaceElement).verticalPos} onChangeFunction={changeVerticalPos} />
+                <Slider startIcon='min' endIcon='max' value={(selectedElement(getType) as MiiFaceElement).scale} onChangeFunction={changeScale}/>
+                {getType(selectedTypeID)?.name=="Eyes" || getType(selectedTypeID)?.name=="Eyebrows" ?<Slider startIcon='near' endIcon='far' value={(selectedElement(getType)  as MiiEyes).distanceBetween} onChangeFunction={changeDistBetw}/> :<></>} 
+                {getType(selectedTypeID)?.name=="Eyes" || getType(selectedTypeID)?.name=="Eyebrows" ?<Slider startIcon='rotClock' endIcon='rotAntiClock'value={(selectedElement(getType) as MiiFaceElement).rotation} onChangeFunction={changeRotation}/>:<></>}
+                <Slider startIcon='shrink' endIcon='stretch' value={(selectedElement(getType) as MiiFaceElement).shrink}  onChangeFunction={changeShrink}/>
 
             </SlidersContainer>
         </MainContainer>
 }
 
 
-const Slider = ({startIcon, endIcon, value, onChangeFunction}:{startIcon:string, endIcon:string,value:number,onChangeFunction:(value:number) => void}) => {
+const Slider = ({startIcon, endIcon, value, onChangeFunction}:{startIcon:string, endIcon:string,value:number,onChangeFunction:(value:number, getType:(id:string) => (RecordModel|undefined)) => void}) => {
     
+    const {getType} = usePocketBaseStore()
+
     return <SliderContainer>
         <SVGContainer>
             <SVG viewBox='0 0 50 50'><FindMovesSVG text={startIcon} /></SVG>
         </SVGContainer>
 
     <InputSliderContainer> 
-        <InputSlider type='range' value={value*100} onChange={(e) => {onChangeFunction(Number(e.target.value)/100)}}  min={0} max={100}/>
+        <InputSlider type='range' value={value*100} onChange={(e) => {onChangeFunction(Number(e.target.value)/100,getType)}}  min={0} max={100}/>
     </InputSliderContainer>
     <SVGContainer>
          <SVG viewBox='0 0 50 50'  ><FindMovesSVG text={endIcon} /></SVG>

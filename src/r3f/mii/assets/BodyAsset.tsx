@@ -4,14 +4,18 @@ import { BufferGeometry, Material, Skeleton } from 'three'
 import * as THREE from 'three'
 import { MiiBody } from '../MiiRendered'
 import { pb } from '@/pocketbase/getPocketBase'
+import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 
 
 const BodyAsset = ({miiElement, skeleton}:{miiElement:MiiBody, skeleton:Skeleton}) => {
 
+    const {getAsset} = usePocketBaseStore();
+    const element = useMemo(()=> {
+        return getAsset(miiElement.elementID)
+    }, [miiElement.elementID, getAsset])
 
-
-    const {scene} = useGLTF(pb.files.getURL(miiElement.element, miiElement.element.glb));
-
+    const {scene:primScene} = useGLTF(pb.files.getURL(element, element.glb));
+    const scene = primScene.clone();
 
     const assetItems = useMemo(()=> {
         const items:{geometry:BufferGeometry, material:Material|Material[]}[] = [];

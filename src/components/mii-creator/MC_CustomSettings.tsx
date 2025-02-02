@@ -8,36 +8,37 @@ import MC_CS_ListElements from './CustomSettings/MC_CS_ListElements'
 import { useMiiCreatorStore } from '@/stores/MiiCreatorStore'
 import MC_CS_Color from './CustomSettings/MC_CS_Color'
 import MC_CS_Sliders from './CustomSettings/MC_CS_Sliders'
+import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 
 const MC_CustomSettings = () => {
 
 
-  const { selectedType, findAssetByType} = useMiiCreatorStore();
-
+    const { getType, findAssetsByType} = usePocketBaseStore();
+    const {selectedTypeID} = useMiiCreatorStore();
 
 
 
     const ShowCustomSettingByMenu = () => {
 
 
-        switch (selectedType?.name) {
+        switch (getType(selectedTypeID)?.name) {
             case 'Head':
                 return <MainContainer>
-                <MC_CS_ListElements list={findAssetByType('Head')} />
+                <MC_CS_ListElements list={findAssetsByType('Head')} />
                     <SideContainer>
                     <MC_CS_Color/>
                     </SideContainer>
                 </MainContainer>
 
             case 'Hair':
-                return <MainContainer><MC_CS_ListElements list={findAssetByType('Hair')} />
+                return <MainContainer><MC_CS_ListElements list={findAssetsByType('Hair')} />
                     <SideContainer>
                     <MC_CS_Color/>
                     </SideContainer>
                  </MainContainer>
             case 'Eyebrows':
                 return <MainContainer>
-                <MC_CS_ListElements list={findAssetByType('Eyebrows')} />
+                <MC_CS_ListElements list={findAssetsByType('Eyebrows')} />
                     <SideContainer>
                     <MC_CS_Color/>
                     <MC_CS_Sliders/>
@@ -45,7 +46,7 @@ const MC_CustomSettings = () => {
                 </MainContainer>
             case 'Eyes':
                 return <MainContainer>
-                <MC_CS_ListElements list={findAssetByType('Eyes')} />
+                <MC_CS_ListElements list={findAssetsByType('Eyes')} />
                     <SideContainer>
                     <MC_CS_Color/>
                     <MC_CS_Sliders/>
@@ -53,7 +54,7 @@ const MC_CustomSettings = () => {
                 </MainContainer>
             case 'Nose':
                 return <MainContainer>
-                <MC_CS_ListElements list={findAssetByType('Nose')} />
+                <MC_CS_ListElements list={findAssetsByType('Nose')} />
                     <SideContainer>
                     <MC_CS_Color/>
                     <MC_CS_Sliders/>
@@ -61,39 +62,42 @@ const MC_CustomSettings = () => {
                 </MainContainer>
             case 'Mouth':
                 return <MainContainer>
-                <MC_CS_ListElements list={findAssetByType('Mouth')} />
+                <MC_CS_ListElements list={findAssetsByType('Mouth')} />
                     <SideContainer>
                     <MC_CS_Sliders/>
                     </SideContainer>
                 </MainContainer>
             case 'Glasses':
                 return <MainContainer>
-                <MC_CS_ListElements list={findAssetByType('Glasses')} />
+                <MC_CS_ListElements list={findAssetsByType('Glasses')} />
                     <SideContainer>
                     <MC_CS_Sliders/>
                     </SideContainer>
                 </MainContainer>
             case 'Bear':
-                return <MainContainer><MC_CS_ListElements list={findAssetByType('Bear')} />
+                return <MainContainer><MC_CS_ListElements list={findAssetsByType('Bear')} />
                 <SideContainer>
                 <MC_CS_Color/>
                 </SideContainer>
              </MainContainer>
             case 'Makeups':
                 return <MainContainer>
-                <MC_CS_ListElements list={findAssetByType('Makeups')} />
+                <MC_CS_ListElements list={findAssetsByType('Makeups')} />
              </MainContainer>
             case 'Wrinkles':
                 return <MainContainer>
-                <MC_CS_ListElements list={findAssetByType('Wrinkles')} />
+                <MC_CS_ListElements list={findAssetsByType('Wrinkles')} />
              </MainContainer>
             case 'Mustache':
                 return <MainContainer>
-                <MC_CS_ListElements list={findAssetByType('Mustache')} />
+                <MC_CS_ListElements list={findAssetsByType('Mustache')} />
+                <SideContainer>
+                    <MC_CS_Sliders/>
+                </SideContainer>
              </MainContainer>
             case 'Human':
                 return <MainContainer>
-                <MC_CS_ListElements list={findAssetByType('Human')} />
+                <MC_CS_ListElements list={findAssetsByType('Human')} />
                 <SideContainer>
                     <MC_CS_Color/>
                 </SideContainer>
