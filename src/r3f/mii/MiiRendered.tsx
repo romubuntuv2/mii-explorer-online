@@ -1,12 +1,13 @@
 
-import React, { Suspense, useEffect, useRef } from 'react'
-import { useGLTF, useAnimations, useFBX } from '@react-three/drei'
+import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { useGLTF, useAnimations, useFBX, Clone } from '@react-three/drei'
 import * as THREE from 'three'
 import BodyAsset from './assets/BodyAsset'
 import HairAsset from './assets/HairAsset'
 import BearAsset from './assets/BearAsset'
 import HeadAsset from './assets/HeadAsset'
 import FullFaceManager from './assets/FullFaceManager'
+import { SocketUser } from '@/stores/SocketStore'
 
 
 export interface MiiFaceElement extends MiiElement {
@@ -49,77 +50,62 @@ export interface Mii {
 }
 
 
-const MiiRendered = ({mii, animationString, cloned}:{mii:Mii, animationString:string, cloned?:boolean}) => {
-
-
-
-  // MAIN ARMATURE
+const MiiRendered = ({ mii, animationString, cloned = false, userID }: { 
+  mii: Mii, 
+  animationString: string, 
+  cloned?: boolean,
+  userID: string // Ajout d'un identifiant unique par utilisateur
+}) => {
   const group = useRef<THREE.Group>(null)
-  const { nodes:MainNodes} = useGLTF('/models/Armature_Plane.glb')
-  const MainSkeleton = (MainNodes.Plane as THREE.SkinnedMesh).skeleton;
+  const { nodes: MainNodes, scene } = useGLTF('/models/Armature_Plane.glb')
+  const [clonedSkeleton, setClonedSkeleton] = useState<THREE.Skeleton>()
 
-  //ANIMATIONS
-  const {animations:AllAnimations} = useFBX("/animations/Animations.fbx");
+  // Clonage profond de l'armature et du skeleton
+  const clonedScene = useMemo(() => {
+    const clone = scene.clone(true)
+    const skinnedMesh = clone.getObjectByName('Plane') as THREE.SkinnedMesh
+    setClonedSkeleton(skinnedMesh.skeleton.clone())
+    return clone
+  }, [scene])
+
+  // Animation spécifique à chaque instance
+  const { animations: AllAnimations } = useFBX("/animations/Animations.fbx")
   const { actions } = useAnimations(AllAnimations, group)
 
-  useEffect(()=> {
-    console.log(animationString)
-    actions[animationString]?.reset().fadeIn(0.5).play();
-  },[animationString])
-
-
+  useEffect(() => {
+    if (cloned) {
+      actions[animationString]?.reset().fadeIn(0.5).play().setLoop(THREE.LoopRepeat, Infinity)
+    }
+  }, [animationString, cloned])
 
   return (
-    <group ref={group} dispose={null}>
-      <group name="Scene">
-        <group name="lp" position={[0,-2,0]}  scale={0.01}>
-
-
-  
-
-          {/* //BODY */}
-          <Suspense>
+    <group ref={group} userData={{ miiID: userID }} dispose={null}>
+      <Clone
+        object={clonedScene}
+        inject={[
+          <group key="custom-components" name="lp" position={[0, -2, 0]} scale={0.01}>
+            {/* Injection des composants spécifiques avec skeleton cloné */}
             <BodyAsset 
-            miiElement={mii.human}
-            skeleton={MainSkeleton}
+              miiElement={mii.human}
+              skeleton={clonedSkeleton as THREE.Skeleton}
+              cloned={cloned}
             />
-          </Suspense>
-
-          {/* HEAD */}
-          <Suspense>
-            <HeadAsset 
-            miiElement={mii.head}
-            bone={MainNodes.mixamorigHead}
-            />
-          </Suspense>
-
-
-          <Suspense>
-            <HairAsset
-            miiElement={mii.hair}
-            bone={MainNodes.mixamorigHead}
-            />
-          </Suspense>
-
-          <Suspense>
-            <BearAsset
-            miiElement={mii.bear}
-            bone={MainNodes.mixamorigHead}
-            />
-          </Suspense>
-
-
-          <FullFaceManager mii={mii} bone={MainNodes.mixamorigHead} />
-          
-
-
-          <primitive object={MainNodes.mixamorigHips} />
-        </group>
-      </group>
+          </group>
+        ]}
+      />
     </group>
   )
 }
 
-export default MiiRendered
 
+export const MiiInstance = React.memo(({ mii, animationString, userID }: { 
+  mii: Mii,
+  animationString: string,
+  userID: string 
+}) => {
+  return <MiiRendered mii={mii} animationString={animationString} cloned userID={userID} />
+})
+
+// Export par défaut maintenu
+export default MiiRendered
 useGLTF.preload('/models/Armature_Plane.glb')

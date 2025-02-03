@@ -7,7 +7,7 @@ import { pb } from '@/pocketbase/getPocketBase'
 import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 
 
-const BodyAsset = ({miiElement, skeleton}:{miiElement:MiiBody, skeleton:Skeleton}) => {
+const BodyAsset = ({miiElement, skeleton, cloned}:{miiElement:MiiBody, skeleton:Skeleton, cloned:boolean}) => {
 
     const {getAsset} = usePocketBaseStore();
     const element = useMemo(()=> {
@@ -28,7 +28,13 @@ const BodyAsset = ({miiElement, skeleton}:{miiElement:MiiBody, skeleton:Skeleton
             }
         })
         return items;
-    }, [scene])
+        // if(!cloned) return items;
+        // else {
+        //     return Object.fromEntries(
+        //         Object.entries(items).map(([key, value]) => [key, value.clone()])
+        //       )
+        // }
+    }, [scene, cloned])
 
 
 

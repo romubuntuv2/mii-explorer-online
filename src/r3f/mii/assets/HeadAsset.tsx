@@ -9,7 +9,7 @@ import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 
 
 
-const HeadAsset = ({miiElement, bone}:{miiElement:MiiElement, bone:THREE.Object3D}) => {
+const HeadAsset = ({miiElement, bone, cloned}:{miiElement:MiiElement, bone:THREE.Object3D, cloned:boolean}) => {
 
     const {getAsset} = usePocketBaseStore();
     const element = useMemo(()=> {
@@ -17,8 +17,8 @@ const HeadAsset = ({miiElement, bone}:{miiElement:MiiElement, bone:THREE.Object3
     }, [miiElement.elementID, getAsset])
 
     const groupRef = useRef<THREE.Group>(null)
-    const {scene:primScene} = useGLTF(pb.files.getURL(element, element.glb));
-    const scene = primScene.clone();
+    const {scene} = useGLTF(pb.files.getURL(element, element.glb));
+
 
     const assetItems = useMemo(()=> {
         const items:{geometry:BufferGeometry, material:Material|Material[]}[] = [];

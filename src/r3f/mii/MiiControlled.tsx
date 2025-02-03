@@ -1,15 +1,15 @@
 import React, { useRef, useState } from 'react'
-import MiiRendered, { Mii } from './MiiRendered'
+import MiiRendered, { Mii, MiiInstance } from './MiiRendered'
 import useControls from '../controls/useControls'
 import { useFrame, useThree } from '@react-three/fiber'
 import { Group, MathUtils, Object3D, Vector2, Vector3 } from 'three'
 import { CuboidCollider, RapierRigidBody, RigidBody, vec3 } from '@react-three/rapier'
-import { useSocketStore } from '@/stores/SocketStore'
+import { SocketUser, useSocketStore } from '@/stores/SocketStore'
 
 
 const CAMERA_INERTIA = 0.95;
 
-const MiiControlled = ({mii}:{mii:Mii}) => {
+const MiiControlled = ({mii, user}:{mii:Mii, user:SocketUser}) => {
 
   const {emitMove} = useSocketStore()
 
@@ -125,7 +125,7 @@ const MiiControlled = ({mii}:{mii:Mii}) => {
 
   return <RigidBody ref={rb} colliders={false} lockRotations  >
           <group ref={mesh} >
-          <MiiRendered mii={mii} animationString={currentAnimation} cloned={false} />
+          <MiiInstance mii={mii} animationString={currentAnimation} userID={user.id as string} />
           </group>
           <CuboidCollider args={[0.4,1,0.4]} position={[0,-1,0]} />
         </RigidBody>
