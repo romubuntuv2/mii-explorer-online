@@ -34,7 +34,7 @@ const BodyAsset = ({miiElement, skeleton}:{miiElement:MiiBody, skeleton:Skeleton
 
 
 
-    return <group  >
+    return <group castShadow  >
     {assetItems.map((item, index) => (
     <skinnedMesh 
         key={index}

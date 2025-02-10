@@ -38,7 +38,7 @@ const HairAsset = ({miiElement, bone}:{miiElement:MiiElement, bone:Object3D}) =>
     }
     },[bone])
 
-  return <group ref={groupRef} scale={80} position={[0,60,0]} >
+  return <group  castShadow ref={groupRef} scale={80} position={[0,60,0]} >
     <mesh
         geometry={assetItems.geometry}
         castShadow   

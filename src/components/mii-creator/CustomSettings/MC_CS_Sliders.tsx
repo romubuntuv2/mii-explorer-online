@@ -1,6 +1,7 @@
 import { MiiEyes, MiiFaceElement } from '@/r3f/mii/MiiRendered'
 import { useMiiCreatorStore } from '@/stores/MiiCreatorStore'
 import { usePocketBaseStore } from '@/stores/PocketBaseStore'
+import { MyColors } from '@/styles/colors'
 import { MC_StyleContainer } from '@/styles/globalStyles'
 import { FindMovesSVG } from '@/svgs/mii-creator/movesSVG'
 import { RecordModel } from 'pocketbase'
@@ -39,7 +40,7 @@ const Slider = ({startIcon, endIcon, value, onChangeFunction}:{startIcon:string,
         <InputSlider type='range' value={value*100} onChange={(e) => {onChangeFunction(Number(e.target.value)/100,getType)}}  min={0} max={100}/>
     </InputSliderContainer>
     <SVGContainer>
-         <SVG viewBox='0 0 50 50'  ><FindMovesSVG text={endIcon} /></SVG>
+         <SVG  viewBox='0 0 50 50'   ><FindMovesSVG text={endIcon} /></SVG>
     </SVGContainer>
     </SliderContainer>
 
@@ -51,6 +52,7 @@ const SlidersContainer = styled.div`
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
+    background-color:${MyColors.backgroundBlue} ;
 `
 
 const SliderContainer = styled.div`
@@ -98,7 +100,7 @@ const InputSlider = styled.input`
     width: 24px;
     height: 40px;
     border-radius: 9999px;
-    background: #007759;
+    background: ${MyColors.darkBlue};
     box-shadow: none;
   }
 
@@ -107,7 +109,7 @@ const InputSlider = styled.input`
     width: 24px;
     height: 53px;
     border-radius: 9999px;
-    background: #007759;
+    background: ${MyColors.darkBlue};
     box-shadow: none;
   }
 `;

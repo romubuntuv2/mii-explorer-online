@@ -1,12 +1,17 @@
 
-import React, { Suspense, useEffect, useRef } from 'react'
-import { useGLTF, useAnimations, useFBX } from '@react-three/drei'
+import React, { Suspense, useEffect, useMemo, useRef } from 'react'
+import { useGLTF, useFBX, Html, } from '@react-three/drei'
 import * as THREE from 'three'
 import BodyAsset from './assets/BodyAsset'
 import HairAsset from './assets/HairAsset'
 import BearAsset from './assets/BearAsset'
 import HeadAsset from './assets/HeadAsset'
 import FullFaceManager from './assets/FullFaceManager'
+import { SkeletonUtils } from 'three/examples/jsm/Addons.js'
+import { useFrame, useGraph } from '@react-three/fiber'
+import { MC_StyleContainer } from '@/styles/globalStyles'
+import styled from 'styled-components'
+
 
 
 export interface MiiFaceElement extends MiiElement {
@@ -49,33 +54,60 @@ export interface Mii {
 }
 
 
-const MiiRendered = ({mii, animationString, cloned}:{mii:Mii, animationString:string, cloned?:boolean}) => {
+const MiiRendered = ({mii, msg, animationString}:{mii:Mii, msg:string, animationString:string}) => {
 
 
 
   // MAIN ARMATURE
   const group = useRef<THREE.Group>(null)
-  const { nodes:MainNodes} = useGLTF('/models/Armature_Plane.glb')
+  const { scene} = useGLTF('/models/Armature_Plane.glb')
+  // const MainSkeleton = (MainNodes.Plane as THREE.SkinnedMesh).skeleton;
+
+  const clonedSkeleton = useMemo(()=> SkeletonUtils.clone(scene),[scene])
+  const {nodes:MainNodes} = useGraph(clonedSkeleton);
   const MainSkeleton = (MainNodes.Plane as THREE.SkinnedMesh).skeleton;
 
+
   //ANIMATIONS
+  const mixer = useMemo(() => new THREE.AnimationMixer(clonedSkeleton), [clonedSkeleton])
   const {animations:AllAnimations} = useFBX("/animations/Animations.fbx");
-  const { actions } = useAnimations(AllAnimations, group)
+  const actions = useMemo(() => {
+    const newActions: { [key: string]: THREE.AnimationAction } = {}
+    AllAnimations.forEach((clip: THREE.AnimationClip) => {
+      newActions[clip.name] = mixer.clipAction(clip)
+    })
+    return newActions
+  }, [mixer, AllAnimations])
 
-  useEffect(()=> {
-    console.log(animationString)
-    actions[animationString]?.reset().fadeIn(0.5).play();
-  },[animationString])
+
+  useEffect(() => {
+    if (actions[animationString]) {
+      actions[animationString].reset().fadeIn(0.5).play()
+      return () => {
+        actions[animationString].fadeOut(0.5)
+      }
+    } else {
+      console.warn(`Animation "${animationString}" not found`)
+    }
+  }, [animationString, actions])
 
 
+  useFrame((state, delta) => {
+    mixer.update(delta)
+  })
 
-  return (
-    <group ref={group} dispose={null}>
+  return <group ref={group} dispose={null} castShadow>
+      {msg.length > 0 ?
+      <Html position={[0,0,0]}
+      occlude
+      >
+      <Container>
+        {msg}
+      </Container>
+      </Html>
+      :<></>}
       <group name="Scene">
-        <group name="lp" position={[0,-2,0]}  scale={0.01}>
-
-
-  
+        <group name="lp" position={[0,-2,0]}   scale={0.01}>
 
           {/* //BODY */}
           <Suspense>
@@ -117,9 +149,20 @@ const MiiRendered = ({mii, animationString, cloned}:{mii:Mii, animationString:st
         </group>
       </group>
     </group>
-  )
+
 }
 
 export default MiiRendered
+
+
+
+const Container = styled(MC_StyleContainer)`
+  min-width: 100px;
+  min-height: 40px;
+  border-width: 5px;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+`
 
 useGLTF.preload('/models/Armature_Plane.glb')

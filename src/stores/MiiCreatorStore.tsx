@@ -6,6 +6,7 @@ import { create } from 'zustand';
 
 interface MiiCreatorStore {
     mii:Mii,
+    savedMiis:Mii[],
     selectedTypeID:string,
     selectedElement:(getType:(id:string) => (RecordModel|undefined))=>MiiElement|MiiFaceElement|MiiEyes|MiiBody,
     initMii: (getInit:(typeName:string)=>string, initTypeID:string) => void,
@@ -79,6 +80,7 @@ export const useMiiCreatorStore = create<MiiCreatorStore>((set,get) => ({
         wrinkles: {elementID:"", color: '#6C7070'},
 
     },
+    savedMiis:[],
     selectedTypeID:"",
     selectedElement:(getType:(id:string) => (RecordModel|undefined))=>{
         const {selectedTypeID, mii} = get();

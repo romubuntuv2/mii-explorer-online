@@ -107,8 +107,6 @@ const MC_CustomSettings = () => {
         }
     }
 
-
-
   return ShowCustomSettingByMenu()
 
 }
@@ -121,7 +119,6 @@ const MainContainer = styled(FullParentContainer)`
     flex-direction: column;
     align-items:center;
     justify-content: space-evenly;
-
 `
 
 const SideContainer = styled.div`

@@ -10,7 +10,7 @@ import styled from 'styled-components'
 const SVGContainer = ({element}:{element:RecordModel}) => {
 
   return <Container>
-    <ReactSVG src={pb.files.getURL(element,element.svg)}  /> 
+    <ReactSVG  src={pb.files.getURL(element,element.svg)}  /> 
   </Container>
 }
 

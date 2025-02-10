@@ -44,7 +44,7 @@ const HeadAsset = ({miiElement, bone}:{miiElement:MiiElement, bone:THREE.Object3
 
 
 
-  return <group ref={groupRef} scale={80} position={[0,30,0]} >
+  return <group castShadow ref={groupRef} scale={80} position={[0,30,0]} >
     <mesh
         geometry={assetItems.geometry}
         castShadow

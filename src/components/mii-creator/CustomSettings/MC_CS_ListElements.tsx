@@ -32,17 +32,19 @@ const ElementIcon = styled.div<{selected: string}>`
   height: 80px;
   aspect-ratio: 1/1;
   border-radius: 20%;
-  background-image: ${MyColors.iconFillColor};
+  background-color: white;
   margin: ${props => props.selected=="isTrue"? "2px" : "7px"};
-  border: ${props => props.selected=="isTrue"? "5px solid"+MyColors.selectedColor2 : "none"};
+  border: ${props => props.selected=="isTrue"? "5px solid"+MyColors.darkBlue : "none"};
 `
 
 
 const MainContainer = styled(MC_StyleContainer)`
     width: 80%;
-    max-height: 35%;
+
+    background-color: ${MyColors.backgroundBlue};
+    max-height: 50%;
     display: flex;
-    /* justify-content: center; */
+
     align-items: center;
     flex-wrap: wrap;
 
@@ -54,15 +56,15 @@ const MainContainer = styled(MC_StyleContainer)`
     margin-bottom: 5px;
   }
   &::-webkit-scrollbar-track {
-    background: ${MyColors.borderColor};
+    /* background: ${MyColors.borderColor}; */
     /* border-radius: 4px; */
   }
   &::-webkit-scrollbar-thumb {
-    background: ${MyColors.selectedColor2};
-    /* border-radius: 4px; */
+    background: ${MyColors.darkBlue};
+    border-radius: 4px;
   }
   &::-webkit-scrollbar-thumb:hover {
-    background: ${MyColors.selectedColor2};
+    background: ${MyColors.darkBlue};
   }
 
 `

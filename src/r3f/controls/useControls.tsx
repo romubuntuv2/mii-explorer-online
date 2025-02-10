@@ -1,3 +1,4 @@
+import { useControlsStore } from '@/stores/ControlsStore'
 import { useEffect, useState } from 'react'
 
 
@@ -13,18 +14,23 @@ interface ArrowsHandler {
     isLeft:boolean,
     isRight:boolean
     isDown:boolean,
+    isShift:boolean,
+    isSpace:boolean,
+    isKeyT:boolean
 }
 
 
 const useControls = () => {
 
+    const {toogleChat} = useControlsStore();
 
     const [mouseHandler, setMouseHandler] = useState<MouseHandler>({isDown:false, wheelDelta:0,movement:{x:0, y:0}});
-    const [arrowsHandler, setArrowsHandler] = useState<ArrowsHandler>({isDown:false,isLeft:false, isRight:false, isUp:false})
+    const [arrowsHandler, setArrowsHandler] = useState<ArrowsHandler>({isDown:false,isLeft:false, isRight:false, isUp:false, isShift:false, isKeyT:false,isSpace:false})
 
 
     useEffect(()=> {
         const handleKeyDown = (event:KeyboardEvent) => {
+            console.log(event.code)
             const newArrows = arrowsHandler
             switch(event.code) {
                 case "ArrowUp": 
@@ -43,6 +49,17 @@ const useControls = () => {
                     newArrows.isRight = true
                     setArrowsHandler(newArrows);
                     break;
+                case "ShiftRight":
+                    newArrows.isShift = true
+                    setArrowsHandler(newArrows);
+                    break;
+                case "Space":
+                    console.log('iiii')
+                    newArrows.isSpace = true
+                    setArrowsHandler(newArrows);
+                    break;
+                case "KeyT":
+                    toogleChat();
                 default:
                     break;
             }
@@ -64,6 +81,10 @@ const useControls = () => {
                     break;
                 case "ArrowRight": 
                     newArrows.isRight = false
+                    setArrowsHandler(newArrows);
+                    break;
+                case "ShiftRight":
+                    newArrows.isShift = false
                     setArrowsHandler(newArrows);
                     break;
                 default:
@@ -119,12 +140,17 @@ const useControls = () => {
     },[arrowsHandler, mouseHandler])
 
 
+    const haveJumped = () => {
+        const newArrows = arrowsHandler
+        newArrows.isSpace = false;
+        setArrowsHandler(newArrows);
+    }
+    
 
 
 
 
-
-return {mouseHandler,arrowsHandler}
+return {mouseHandler,arrowsHandler, haveJumped}
 }
 
 export default useControls

@@ -1,5 +1,6 @@
 'use client'
 
+import MainHUD from '@/components/mii-verse/MainHUD'
 import CanvaMiiVerseScene from '@/r3f/canvasContainers/CanvaMiiVerseScene'
 import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 import { FullPageContainer } from '@/styles/globalStyles'
@@ -22,11 +23,14 @@ const MiiVersePage = () => {
   return isLoading ? <></> : 
     <MainContainer>
       <CanvaMiiVerseScene/>
+      <MainHUD/>
     </MainContainer>
 }
 
 const MainContainer = styled(FullPageContainer)`
-  background-color: aliceblue;
+
 `
+
+
 
 export default MiiVersePage
