@@ -1,9 +1,7 @@
 import { SocketUser } from '@/stores/SocketStore'
-import React, { use, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import MiiRendered from './MiiRendered'
-import { Mii2 } from '@/data/defaultsMii'
 import { Group, Vector3 } from 'three'
-import { CuboidCollider, RigidBody } from '@react-three/rapier'
 
 
 

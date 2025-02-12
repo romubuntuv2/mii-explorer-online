@@ -1,82 +1,17 @@
 import WuhuIsland from '@/r3f/env/WuhuIsland'
 import { WuhuIslandBlender } from '@/r3f/env/WuhuIslandBlender'
-import MiiRendered from '@/r3f/mii/MiiRendered'
-import { useMainMenuStore } from '@/stores/MainMenuStore'
-import { useMiiCreatorStore } from '@/stores/MiiCreatorStore'
-import { CameraControls, Center, Environment, OrbitControls, PerspectiveCamera } from '@react-three/drei'
-import { Camera, Canvas, useFrame, useThree } from '@react-three/fiber'
+import {  Environment, OrbitControls } from '@react-three/drei'
+import { Canvas} from '@react-three/fiber'
 import { EffectComposer, Noise } from '@react-three/postprocessing'
 import { Physics } from '@react-three/rapier'
-import React, { Suspense, useEffect, useRef } from 'react'
-import { ACESFilmicToneMapping, Object3D, SRGBColorSpace } from 'three'
-import { useSpring, animated } from '@react-spring/three'
+import React from 'react'
+import { ACESFilmicToneMapping, SRGBColorSpace } from 'three'
+
 
 const BackgroundCanva = () => {
 
-  const {isCustomMii, menu} = useMainMenuStore();
-  const {mii} = useMiiCreatorStore();
 
 
-
-  const CameraHandler = ()=> {
-    const {camera} = useThree()
-
-    function CameraOffset() {
-
-      useEffect(() => {
-        camera.setViewOffset(
-          window.innerWidth,
-          window.innerHeight,
-          window.innerWidth * 0.3,
-          0,
-          window.innerWidth,
-          window.innerHeight
-        )
-        return () => camera.clearViewOffset()
-      }, [camera])
-      return null
-    }
-
-    const {isCustomMii} = useMainMenuStore();
-
-    const controlsRef = useRef(null)
-
-    const { cameraPosition, targetPosition } = useSpring({
-      cameraPosition: isCustomMii() ? [-172, 15.5, 41] : [500, 100, 0],
-      targetPosition: isCustomMii() ? [-172, 12, 39] : [0, 0, 0],
-      config: { mass: 1, tension: 280, friction: 120 }
-    })
-  
-    useFrame(() => {
-      if (controlsRef.current) {
-        controlsRef.current.setLookAt(
-          ...cameraPosition.get(),
-          ...targetPosition.get(),
-          true
-        )
-      }
-    })
-
-
-    
-
-    return <>
-        {isCustomMii() && <CameraOffset />}
-        
-
-        <CameraControls
-        ref={controlsRef}
-        makeDefault
-        minDistance={isCustomMii() ? 2 : 500}
-        maxDistance={isCustomMii() ? 10 : 500}
-        enableRotate={isCustomMii()}
-        enableZoom={isCustomMii()}
-        enablePan={false}
-      />
-
-    </>
-
-  }
 
 
 
@@ -120,7 +55,7 @@ const BackgroundCanva = () => {
             position:[500,100,0]
         }}
         >
-          {/* <Perf position='top-left' /> */}
+
           <EffectComposer>
           <Noise opacity={0} />
           </EffectComposer>

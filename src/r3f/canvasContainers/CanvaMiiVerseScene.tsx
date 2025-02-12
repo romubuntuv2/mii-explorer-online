@@ -8,7 +8,7 @@ import MiiSocketed from '../mii/MiiSocketed'
 import { ACESFilmicToneMapping, SRGBColorSpace } from 'three'
 import { WuhuIslandBlender } from '../env/WuhuIslandBlender'
 import { EffectComposer } from '@react-three/postprocessing'
-import { Perf } from 'r3f-perf'
+
 import { Mii } from '../mii/MiiRendered'
 import WuhuIslandNotBlender from '../env/WuhuIslandNotBlender'
 

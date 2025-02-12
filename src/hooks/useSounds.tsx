@@ -46,7 +46,7 @@ const useSounds = () => {
     const OkSound = '/sounds/Ok-Sound.mp3';
     const OkSoundAudio = useMemo(()=> {
         return new Audio(OkSound) 
-    },[TitleSound])
+    },[OkSound])
 
     const MenuSelect = '/sounds/MenuSelect.wav';
     const MenuSelectAudio = useMemo(()=> {

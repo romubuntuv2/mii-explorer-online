@@ -3,7 +3,7 @@ import { Titles } from '@/svgs/main-menu/MM_TitlesSVG'
 import React from 'react'
 import styled from 'styled-components'
 
-const LoadingPage = ({progress}:{progress?:number}) => {
+const LoadingPage = () => {
   return (
     <Container>
         <Titles haveStroke={false} scale={2} />

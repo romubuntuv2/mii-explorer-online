@@ -1,5 +1,5 @@
 'use client'
-import { Center, Environment, OrbitControls } from '@react-three/drei'
+import { Environment, OrbitControls } from '@react-three/drei'
 import { Canvas, useThree } from '@react-three/fiber'
 import React from 'react'
 import styled from 'styled-components'

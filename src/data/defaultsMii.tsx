@@ -73,7 +73,11 @@ export const Mii1:Mii = {
     },
     "mustache": {
         "elementID": "myiymg2kuzr5g45",
-        "color": "#6C7070"
+        "color": "#6C7070",
+        "verticalPos": 0.5,
+        "rotation": 0.5,
+        "scale": 0.5,
+        "shrink": 0.5,
     }
 }
 
