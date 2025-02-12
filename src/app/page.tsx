@@ -1,7 +1,7 @@
 'use client'
 import BackgroundCanva from '@/components/main-menu/BackgroundCanva';
 import WiiCursor from '@/components/utils/WiiCursorHook';
-import React, { Suspense} from 'react'
+import React, { Suspense, useEffect} from 'react'
 import styled from 'styled-components'
 import {motion} from 'motion/react'
 import MainMenuHUD from '@/components/main-menu/MainMenuHUD';
@@ -13,14 +13,16 @@ import { MyColors } from '@/styles/colors';
 
 const HomePage = () => {
 
-  const {playLoop, titleMusic} = useSoundsStore()
+  const {playLoop, initSounds} = useSoundsStore()
   const {isComputer} = useDeviceType()
 
   const handleStartTitleMusic = () => {
-    if(titleMusic.sound.paused) {
       playLoop('title')
-    }
   }
+
+  useEffect(()=> {
+    initSounds()
+  },[])
 
   return !isComputer ? 
   <Container
