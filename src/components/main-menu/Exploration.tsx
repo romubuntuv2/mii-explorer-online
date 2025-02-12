@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, {useState } from 'react'
 import ResortButton from '../utils/ResortButton'
 
 import styled from 'styled-components'
@@ -6,42 +6,101 @@ import { TextStyle } from '@/styles/globalStyles'
 import { SoloIcon } from '@/svgs/main-menu/SoloIcon'
 import { MultiIcon } from '@/svgs/main-menu/MultiIcon'
 import { ExplorerHeader } from '@/svgs/main-menu/ExplorerHeader4'
-import { Canvas } from '@react-three/fiber'
 import { useMainMenuStore } from '@/stores/MainMenuStore'
-import { AnimatePresence, motion } from 'motion/react'
-import { enterTransition } from '@/styles/motions'
+import { AnimatePresence, motion, spring } from 'motion/react'
+import { useMiiCreatorStore } from '@/stores/MiiCreatorStore'
+import { Canvas } from '@react-three/fiber'
+import MiiRendered, { Mii } from '@/r3f/mii/MiiRendered'
+import { Environment } from '@react-three/drei'
+import { useSocketStore } from '@/stores/SocketStore'
+import { useRouter } from 'next/navigation'
+import { useSoundsStore } from '@/stores/SoundsStore'
+import { defaultMiis } from '@/data/defaultsMii'
 
-
+const transition = {duration:0.8, type:spring}
 
 const ExplorationMenu = () => {
 
-
+    const router = useRouter()
     const {isExploration, changeMenu} = useMainMenuStore();
+    const {savedMiis} = useMiiCreatorStore();
+    const {setLocalMii, setIsLocalOnly} = useSocketStore()
+
+    const {play, stop} = useSoundsStore()
 
     const [modeSelected, setModeSelected] = useState<string|null>(null);    
+    const [isSessionMiis, setIsSesseionMiis] = useState(true);
 
     const handleClickMode = (single:boolean) => {
+        play("menuIn");
         if(single) setModeSelected("Single");
         else setModeSelected("Multi");
     }
 
     const handleBackButton = ()=> {
+        play("menuOut");
         if(modeSelected != null) setModeSelected(null);
         else {
             changeMenu("Transition");
             setTimeout(()=> {
                 changeMenu("ModeMenu")
-            },2000)
+            },800)
         }
     }
 
+    const handleClickMii = (mii:Mii) => {
+        play('ok')
+        setLocalMii(mii)
+        if(modeSelected == "Single") setIsLocalOnly(true)
+        else setIsLocalOnly(false)
+        setTimeout(()=> {  
+            stop("title")
+            router.push('/mii-verse')
+          },500)
+    }
+
+
+    const MiiImageCanvas = ({mii}:{mii:Mii}) => {
+        return <>
+        <Environment preset='sunset' />
+        <group position={[0,1.2,3.8]}>
+        <MiiRendered msg='' animationString='directIdle' mii={mii}  />
+        </group>
+        </>
+    }
+
+    const GenerateMiiImage = () => {
+        if(isSessionMiis){
+        if(savedMiis.length == 0) {
+            return <TextStyle style={{fontSize:'24px'}} >Create your own Mii with Mii Creatore before</TextStyle>
+        } else {
+        return savedMiis.map((mii, index) => { //PAGE DE 12
+            return <MiiImage key={index} onClick={()=>handleClickMii(mii)} onHoverStart={()=>{play('menuHoover')}} onHoverEnd={()=>{stop('menuHoover')}}
+            whileHover={{scale:1.1}} whileTap={{scale:0.9}}
+            >
+                <Canvas style={{width:'100%', height:'100%'}}>
+                <MiiImageCanvas mii={mii} />
+                </Canvas>
+            </MiiImage>
+            
+        })}} else {
+            return defaultMiis.map((mii, index) => { //PAGE DE 12
+                return <MiiImage key={index} onClick={()=>handleClickMii(mii)} onHoverStart={()=>{play('menuHoover')}} onHoverEnd={()=>{stop('menuHoover')}}
+                whileHover={{scale:1.1}} whileTap={{scale:0.9}}
+                >
+                    <Canvas style={{width:'100%', height:'100%'}}>
+                    <MiiImageCanvas mii={mii} />
+                    </Canvas>
+                </MiiImage>
+        })} 
+    }
 
   return <AnimatePresence> {isExploration() &&
     <>
     <Header
     initial={{opacity:0}}
-    animate={{opacity:1, transition:enterTransition}}
-    exit={{opacity:0, transition:enterTransition}}
+    animate={{opacity:1, transition:transition}}
+    exit={{opacity:0, transition:transition}}
     >
         <ExplorerHeader />
     </Header>
@@ -54,8 +113,8 @@ const ExplorationMenu = () => {
     animate={modeSelected===null?{x:0,opacity:1}:{x:-3000,opacity:0}}
     exit={{opacity:0}}
     >
-        <SelectionButton onClick={()=> handleClickMode(true)}
-        whileHover={{scale:1.1}} >
+        <SelectionButton onClick={()=> handleClickMode(true)} onHoverStart={()=>{play('menuHoover')}} onHoverEnd={()=>{stop('menuHoover')}}
+        whileHover={{scale:1.1}} whileTap={{scale:0.9}} >
             <SelectionIconContainer>
                 <SoloIcon/>
             </SelectionIconContainer>
@@ -65,8 +124,8 @@ const ExplorationMenu = () => {
         </SelectionButton>
 
 
-        <SelectionButton onClick={()=> handleClickMode(false)}
-        whileHover={{scale:1.1}} >
+        <SelectionButton onClick={()=> handleClickMode(false)}  onHoverStart={()=>{play('menuHoover')}} onHoverEnd={()=>{stop('menuHoover')}}
+        whileHover={{scale:1.1}} whileTap={{scale:0.9}} >
             <SelectionIconContainer>
                 <MultiIcon/>
             </SelectionIconContainer>
@@ -83,38 +142,32 @@ const ExplorationMenu = () => {
     >
         <SecondContainer>
         <MiiMenu>
-            <MiiButton><TextStyle>Session Mii</TextStyle> </MiiButton>
-            <MiiButton><TextStyle>Online Mii</TextStyle> </MiiButton>
+            <MiiButton onClick={() => {setIsSesseionMiis(true)}}
+            style={isSessionMiis?{backgroundColor:"rgba(0,255,255,1)"}:{backgroundColor:"#808080"}}
+            whileHover={{scale:1.1}} whileTap={{scale:0.9}}
+             onHoverStart={()=>{play('menuHoover')}} onHoverEnd={()=>{stop('menuHoover')}}
+            >
+                <TextStyle>Session Mii</TextStyle> 
+            </MiiButton>
+            <MiiButton onClick={() => {setIsSesseionMiis(false)}}
+            style={!isSessionMiis?{backgroundColor:"rgba(0,255,255,1)"}:{backgroundColor:"#808080"}}
+            whileHover={{scale:1.1}} whileTap={{scale:0.9}}
+             onHoverStart={()=>{play('menuHoover')}} onHoverEnd={()=>{stop('menuHoover')}}
+            >
+                <TextStyle>Invite Mii</TextStyle> 
+            </MiiButton>
         </MiiMenu>
 
         <MiisContainer>
-            <MiiImage  >
-                <Canvas style={{width:'100%', height:'100%'}}>
-                    <mesh>
-                        <sphereGeometry/>
-                        <meshBasicMaterial color={'red'} />
-                    </mesh>
-                </Canvas>
-            </MiiImage>
-            <MiiImage></MiiImage>
-            <MiiImage></MiiImage>
-            <MiiImage></MiiImage>
-            <MiiImage></MiiImage>
-            <MiiImage></MiiImage>
-            <MiiImage></MiiImage>
-            <MiiImage></MiiImage>
-            <MiiImage></MiiImage>
-            <MiiImage></MiiImage>
-            <MiiImage></MiiImage>
-            <MiiImage></MiiImage>
+            {GenerateMiiImage()}
         </MiisContainer>
         </SecondContainer>
     </MenuContainer>
 
     </DoubleMenuContainer>
     
-    <ResortButtonDiv onClick={()=> handleBackButton()}  >
-    <ResortButton back={true} scale={1} text='Back' />
+    <ResortButtonDiv onClick={()=> handleBackButton()}    >
+    <ResortButton iconID='back' scale={1} text='Back' />
     </ResortButtonDiv>
   </>}
   </AnimatePresence>
@@ -149,15 +202,16 @@ const SecondContainer = styled.div`
     justify-content: space-around;
 `
     
-const MiiImage = styled.div`
+const MiiImage = styled(motion.div)`
     width: 10%;
     aspect-ratio: 1;
     height: 30%;
-    background-color: #E3E5E5;
     border-radius: 10px;
     border: 5px solid white;
     margin-left: 2.5%;
     margin-right: 2.5%;
+    background-color: #F0F5F5;
+    box-shadow: 0px 5px 5px #5A5A5A;
 `
 
 const MiiMenu = styled.div`
@@ -168,7 +222,7 @@ const MiiMenu = styled.div`
     align-items: center;
 `
 
-const MiiButton = styled.div`
+const MiiButton = styled(motion.div)`
     height: 80%;
     width: 20%;
     font-size: 32px;
@@ -188,6 +242,7 @@ const MiisContainer = styled.div`
     width: 80%;
     border-radius: 10px;
     background-color: rgba(0,255,255,0.7);
+    backdrop-filter: blur(2px);
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -251,7 +306,7 @@ const SelectionText = styled(TextStyle)`
     font-size: 62px;
     color:#4E4EFF !important;
 `
-const ResortButtonDiv = styled.div`
+const ResortButtonDiv = styled(motion.div)`
   position: absolute;
   top: 80vh;
   left: 10vw;

@@ -9,15 +9,15 @@ import { useControlsStore } from '@/stores/ControlsStore'
 
 
 
-const MII_WALK_SPEED = 4.0;
-const MII_RUN_SPEED = 40.0;
-const MII_JUMP= 50.0;
+const MII_WALK_SPEED = 5.0;
+const MII_RUN_SPEED = 10.0;
+const MII_JUMP= 5.0;
 const CAMERA_INERTIA = 0.95;
 
 const MiiControlled = ({mii}:{mii:Mii}) => {
 
-  const {toogleChat,setMsg, msg} = useControlsStore();
-  const {emitMove, emitRotate, emitMessage, emitAnimation} = useSocketStore()
+  const {isChatOpen, isMapOpen, setMsg, msg, tpPosition, setTP} = useControlsStore();
+  const {emitMove, emitRotate, emitMessage, emitAnimation, mySocket} = useSocketStore()
 
   const rb = useRef<RapierRigidBody>(null);
   const mesh = useRef<Group>(null);
@@ -28,17 +28,24 @@ const MiiControlled = ({mii}:{mii:Mii}) => {
   })
 
   const {camera, gl} = useThree();
-  const {mouseHandler, arrowsHandler, haveJumped} = useControls();
+  const {mouseHandler, arrowsHandler, haveJumped} = useControls(isChatOpen, isMapOpen);
 
-  const [currentAnimation, setAnimation] = useState<string>("Idle.001")
+  const [currentAnimation, setAnimation] = useState<string>("idle")
   const [isGrounded, setIsGrounded] = useState<boolean>(false);
+  const [canMove, setCanMove] = useState(true);
+
+  const applyAnimation = (animationString:string) => {
+    setAnimation(animationString)
+    emitAnimation(animationString)
+  }
 
 
   useEffect(()=> {
+    if(msg == undefined || !mySocket.connected) return
     if(msg.length > 0) {
       setInterval(()=> {
         setMsg("");
-      },100000)
+      },5000)
     }
     emitMessage(msg);
   },[msg])
@@ -90,6 +97,7 @@ const MiiControlled = ({mii}:{mii:Mii}) => {
  
 
   const HandleMoveMiiRB = (rb:RapierRigidBody) => {
+    if(!canMove) return; 
     const rbPosition = vec3(rb.translation())
     if(arrowsHandler.isUp) {
       const currentVel = rb.linvel();
@@ -101,16 +109,21 @@ const MiiControlled = ({mii}:{mii:Mii}) => {
       rb.setLinvel(currentVel, true)
 
 
-      const newPos = vec3(rb.translation())
-      console.log(newPos)
-      emitMove([newPos.x, newPos.y, newPos.z])
 
-      setAnimation("Walk")
-      emitAnimation("Walk")
+      if(isGrounded) {
+        if(arrowsHandler.isShift) {
+          applyAnimation("run")
+        } else {
+          applyAnimation("walk")
+        }
+      }
+
+
     } else if( !arrowsHandler.isDown && !arrowsHandler.isLeft && !arrowsHandler.isRight && !arrowsHandler.isDown) {
-      if(currentAnimation !== "Idle.001") {
-        setAnimation("Idle.001")
-        emitAnimation("Idle.001");
+      const linvel = rb.linvel();
+      rb.setLinvel(new Vector3(0,linvel.y,0), true)
+      if(currentAnimation !== "idle" && isGrounded) {
+        applyAnimation("idle")
       }
 
     }
@@ -124,9 +137,6 @@ const MiiControlled = ({mii}:{mii:Mii}) => {
       directionVector.normalize();
       mesh.lookAt(rbPos.clone().add(directionVector));
 
-
-      // console.log(mesh.rotation.y)
-      // console.log(mesh.rotation.z)
       const pointToLookAt = rbPos.clone().add(directionVector)
       emitRotate([pointToLookAt.x, pointToLookAt.y, pointToLookAt.z]);
     }
@@ -134,15 +144,25 @@ const MiiControlled = ({mii}:{mii:Mii}) => {
 
   const HandleJump = (rb:RapierRigidBody) => {
     if(arrowsHandler.isSpace && isGrounded) {
-      console.log(arrowsHandler.isShift)
+      setCanMove(false)
+      applyAnimation('jump')
       haveJumped();
       setIsGrounded(false);
-
-      const currentVel = rb.linvel();
-      currentVel.y += MII_JUMP;
-      rb.setLinvel(currentVel, true);
-
+      setTimeout(()=> {
+        const directionVector = new Vector3().subVectors(vec3(rb.translation()),camera.position);
+        const currentVel = rb.linvel();
+        directionVector.normalize();
+        directionVector.multiplyScalar(arrowsHandler.isShift?MII_RUN_SPEED:MII_WALK_SPEED);
+        currentVel.x = directionVector.x;
+        currentVel.z = directionVector.z;
+        currentVel.y += MII_JUMP;
+        rb.setLinvel(currentVel, true);
+      },800)
+    } 
+    if(isGrounded && !canMove) {
+      setCanMove(true)
     }
+
   }
 
 
@@ -174,24 +194,33 @@ const MiiControlled = ({mii}:{mii:Mii}) => {
     HandleMoveMiiRB(rb.current)
     HandleMeshRotation(mesh.current,rbPosition );
     HandleJump(rb.current);
+    const newPos = vec3(rb.current.translation())
+    emitMove([newPos.x, newPos.y, newPos.z])
 
   })
 
 
+  useEffect(()=> {
+    if(rb.current && tpPosition != null) {
+      rb.current.setTranslation(new Vector3(tpPosition[0],tpPosition[1],tpPosition[2]), true)
+      setTP(null)
+    }
+  },[tpPosition])
 
 
-
-  return <RigidBody ref={rb} 
+  return <group scale={1.5}>
+    <RigidBody ref={rb} 
   colliders={false} lockRotations 
           gravityScale={1} type="dynamic"
         onCollisionEnter={({other}) => OnCollisionEnter(other)}
         onCollisionExit={({other}) => OnCollisionExit(other)}
         >
-          <group ref={mesh} >
+          <group ref={mesh}  >
           <MiiRendered mii={mii} msg={msg} animationString={currentAnimation} />
           </group>
           <CuboidCollider args={[0.4,0.7,0.4]} position={[0,-1.3,0]} />
         </RigidBody>
+        </group>
 }
 
 

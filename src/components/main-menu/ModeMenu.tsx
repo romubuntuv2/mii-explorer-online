@@ -1,72 +1,93 @@
-
+'use client'
 import React from 'react'
 import styled from 'styled-components'
-import ResortButton from '../utils/ResortButton'
+// import ResortButton from '../utils/ResortButton'
 import { TextStyle } from '@/styles/globalStyles'
 import { Titles } from '@/svgs/main-menu/MM_TitlesSVG'
 import { useMainMenuStore } from '@/stores/MainMenuStore'
-import { AnimatePresence, motion } from 'motion/react'
-import { enterTransition } from '@/styles/motions'
+import { AnimatePresence, motion, spring } from 'motion/react'
+import { useRouter } from 'next/navigation'
+import { useSoundsStore } from '@/stores/SoundsStore'
 
+
+const transition = {duration:0.8, type:spring}
 
 const ModeMenu = () => {
 
+  const router = useRouter();
+  const {play, stop} = useSoundsStore();
   const {isModeMenu, changeMenu} = useMainMenuStore();
 
 
   const handleClickExplorer = () => {
+    play('menuIn')
     changeMenu("Transition")
     setTimeout(()=> {
       changeMenu("Exploration");
-    },2000)
+    },800)
+  }
+  const handleClickCustom = () => {
+    play('menuIn')
+    changeMenu("TransitionToCustom")
+    setTimeout(()=> {  
+      stop("title")
+      router.push('/mii-creator');
+    },800)
   }
 
   const handleMainMenu = ()=> {
+    play('menuOut')
     changeMenu("Transition")
     setTimeout(()=> {
       changeMenu("StartMenu");
-    },2000)
+    },800)
   }
+
+
 
 
   return <AnimatePresence>{isModeMenu() &&
     <>
       <TwoModeContainer>
-        <ModeContainer onClick={()=> handleClickExplorer()}
+        <ModeContainer onClick={()=> handleClickExplorer()} onHoverStart={()=>{play('menuHoover')}} onHoverEnd={()=>{stop('menuHoover')}}
               initial={{opacity:0}}
-              animate={{opacity:1, transition:enterTransition}}
-              exit={{opacity:0, transition:enterTransition}}
-              whileHover={{scale:1.1}}
+              animate={{opacity:1, transition:transition}}
+              exit={{opacity:0, transition:transition}}
+              whileHover={{scale:1.1}} whileTap={{scale:0.9}}
         >
           <ModeText>Explorer the Wuhu Island</ModeText>
-          <ModeImgContainer></ModeImgContainer>
+          <ModeImgContainer>
+          <ModeImg src={'/img/explorerMIi.png'} />
+          </ModeImgContainer>
         </ModeContainer>
-        <ModeContainer
+        <ModeContainer onClick={()=> handleClickCustom()} onHoverStart={()=>{play('menuHoover')}} onHoverEnd={()=>{stop('menuHoover')}}
               initial={{opacity:0}}
-              animate={{opacity:1, transition:enterTransition}}
-              exit={{opacity:0, transition:enterTransition}}
-              whileHover={{scale:1.1}}
+              animate={{opacity:1, transition:transition}}
+              exit={{opacity:0, transition:transition}}
+              whileHover={{scale:1.1}} whileTap={{scale:0.9}}
         >
         <ModeText>Create your own Mii</ModeText>
-        <ModeImgContainer></ModeImgContainer>
+        <ModeImgContainer>
+          <ModeImg src={'/img/customMii.png'} />
+        </ModeImgContainer>
         </ModeContainer>
       </TwoModeContainer>
 
 
-      <TitleButton onClick={()=> handleMainMenu()}
+      <TitleButton onClick={()=> handleMainMenu()} onHoverStart={()=>{play('menuHoover')}} onHoverEnd={()=>{stop('menuHoover')}}
       initial={{opacity:0}}
-      animate={{opacity:1, transition:enterTransition}}
-      exit={{opacity:0, transition:enterTransition}}
-      whileHover={{scale:1.2}}
+      animate={{opacity:1, transition:transition}}
+      exit={{opacity:0, transition:transition}}
+      whileHover={{scale:1.2}} whileTap={{scale:0.9}}
       >
         <Titles  haveStroke={true} scale={0.14} />
         <TextStyle style={{fontSize:'36px'}} >Main Menu</TextStyle>
       </TitleButton>
 
 
-      <ResortButtonDiv>
-      <ResortButton back={false} scale={0.9} text='Settings' />
-      </ResortButtonDiv>
+      {/* <ResortButtonDiv onHoverStart={()=>{play('menuHoover')}} onHoverEnd={()=>{stop('menuHoover')}} >
+      <ResortButton iconID='settings' scale={0.9} text='Settings' />
+      </ResortButtonDiv> */}
     </>}
     </AnimatePresence>
 }
@@ -86,14 +107,14 @@ const TitleButton = styled(motion.div)`
   align-items: center;
 `
 
-const ResortButtonDiv = styled.div`
-  position: absolute;
-  top: 75vh;
-  left: 70vw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`
+// const ResortButtonDiv = styled(motion.div)`
+//   position: absolute;
+//   top: 75vh;
+//   left: 70vw;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// `
 
 const TwoModeContainer = styled.div`
   position: absolute;
@@ -114,14 +135,35 @@ text-align: center;
 `
 
 const ModeImgContainer = styled.div`
-  height: 65%;
-  width: 80%;
-  background: red;
+  aspect-ratio: 1900/995;
+  height:auto;
+  width: 90%;
+  border-radius:20px;
+  overflow: hidden;
+  user-drag: none;  
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+  /* background: red; */
+`
+
+const ModeImg = styled.img`
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  user-drag: none;  
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 `
 
 const ModeContainer = styled(motion.div)`
   height: 70%;
-  width: 20%;
+  width: 30%;
   border-radius: 15px;
   box-shadow: 0px 10px rgba(20,20,20,0.4);
   background-color: rgba(255,255,255,0.8);

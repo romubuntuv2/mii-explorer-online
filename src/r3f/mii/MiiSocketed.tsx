@@ -23,8 +23,8 @@ const MiiSocketed = ({user}:{user:SocketUser}) => {
   },)
 
 
-  return <group ref={ref} position={user.position}  >
-    <MiiRendered mii={Mii2} msg={user.msg} animationString={user.currentAnimation} />
+  return <group scale={1.5} ref={ref} position={user.position}  >
+    <MiiRendered mii={user.mii} msg={user.msg} animationString={user.currentAnimation} />
   </group>
 
 

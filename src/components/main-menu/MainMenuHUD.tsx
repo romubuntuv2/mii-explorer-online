@@ -6,7 +6,7 @@ import EditMii from './EditMii';
 
 const MainMenuHUD = () => {
 
-
+  
 
   return <>     
     <StartMenu />

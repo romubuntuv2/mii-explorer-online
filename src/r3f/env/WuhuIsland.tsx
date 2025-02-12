@@ -15,8 +15,6 @@ const WuhuIsland = ({position, scale}:{position:[number,number,number], scale:nu
     <group  receiveShadow position={position} dispose={null}>
       <group receiveShadow rotation={[-Math.PI / 2, 0, 0]} scale={scale}>
         <group receiveShadow position={[-1139526.375, -1139353.5, -2169.607]}>
-
-          {/* //ARENA */}
           <mesh
             
             receiveShadow

@@ -11,7 +11,7 @@ interface MainMenuStore {
 }
 
 export const useMainMenuStore = create<MainMenuStore>((set, get) => ({
-    menu:"CustomMii",
+    menu:"StartMenu",
     changeMenu:(menu:string) => {
         set({menu:menu})
     },

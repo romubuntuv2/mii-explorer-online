@@ -154,3 +154,5 @@ export const Mii2:Mii = {
         "color": "#6C7070"
     }
 }
+
+export const defaultMiis = [Mii1, Mii2]

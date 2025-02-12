@@ -1,38 +1,48 @@
 import { Environment} from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Mii1 } from '@/data/defaultsMii'
+import React, { useEffect, useMemo } from 'react'
 import MiiControlled from '../mii/MiiControlled'
 import { Physics } from '@react-three/rapier'
 import { SocketUser, useSocketStore } from '@/stores/SocketStore'
-import { socket } from '@/socket/socket'
 import MiiSocketed from '../mii/MiiSocketed'
 import { ACESFilmicToneMapping, SRGBColorSpace } from 'three'
 import { WuhuIslandBlender } from '../env/WuhuIslandBlender'
 import { EffectComposer } from '@react-three/postprocessing'
 import { Perf } from 'r3f-perf'
-import WuhuIsland from '../env/WuhuIsland'
+import { Mii } from '../mii/MiiRendered'
+import WuhuIslandNotBlender from '../env/WuhuIslandNotBlender'
 
 
 const CanvaMiiVerseScene = () => {     
 
+  const {emitSpawned,updateUsers, mySocket,users, localMii, isLocalOnly} = useSocketStore()
 
 
-
-  const {emitSpawned,updateUsers, users} = useSocketStore()
 
   useEffect(()=> {
-    const user:SocketUser = {name:'dimitri', mii:Mii1, id:socket?.id, position:[0,0,0], pointToLookAt:[0,0,0], msg:'',currentAnimation:"Idle.001"}
-    emitSpawned(user)
-
-    socket.on('updateUsers', (users) => {updateUsers(users)})
+    if(isLocalOnly) return
+    const onConnect =()=> {
+      if(localMii == undefined) return
+      console.log("emit")
+      const user:SocketUser = {name:'dimitri', mii:localMii, id:mySocket.id, position:[0,0,0], pointToLookAt:[0,0,0], msg:"",currentAnimation:"idle"}
+      emitSpawned(user)
+    }
+    
+    mySocket.on('connection', onConnect)
+    mySocket.on('updateUsers', (users) => {updateUsers(users)})
+    mySocket.connect();
+    return ()=> {
+      mySocket.off('connection', onConnect)
+      mySocket.off('updateUsers', (users) => {updateUsers(users)})
+    }
+  
   },[])
 
 
 
   const GenerateUsersSocketed = useMemo(()=> {
     return users.map((user) => {
-      if(user.id !== socket.id) {
+      if(user.id !== mySocket.id) {
         return <MiiSocketed key={user.id} user={user} />
       }
     })
@@ -51,7 +61,6 @@ const CanvaMiiVerseScene = () => {
       <EffectComposer><></></EffectComposer>
     
         <Environment preset='sunset'  environmentIntensity={0.4} />
-        {/* <Sky distance={450000}  sunPosition={[0, 1, 0]} inclination={0} azimuth={0.80}/> */}
 
         <directionalLight 
         color={'#FCA966'}
@@ -68,19 +77,20 @@ const CanvaMiiVerseScene = () => {
   shadow-bias={-0.0001}
 />
         
-        {/* <rectAreaLight castShadow color={'white'} intensity={10000} position={[0,100,0]} /> */}
 
 
         <Physics>
           <WuhuIslandBlender position={[0,-50,0]} />
-          <WuhuIsland position={[0,-50,0]} scale={0.008}  />
-          <MiiControlled mii={Mii1} />
-          {GenerateUsersSocketed}
+          <WuhuIslandNotBlender position={[0,-50,0]} scale={0.008}  />
+          <MiiControlled mii={localMii as Mii} />
+          {!isLocalOnly && GenerateUsersSocketed}
 
         <mesh  position={[0,-52,0]}  rotation={[-Math.PI/2,0,0]}>
           <planeGeometry args={[10000,10000]} />
           <meshStandardMaterial color={'#66b6fc'} />
         </mesh>
+
+
 
         <mesh receiveShadow position={[-74,57,-330]}  rotation={[-Math.PI/2,0,0]}>
           <planeGeometry args={[200,115]} />
@@ -88,6 +98,11 @@ const CanvaMiiVerseScene = () => {
         </mesh>
         <mesh receiveShadow position={[-30,57.5,-240]}  rotation={[-Math.PI/2,0,0]}>
           <planeGeometry args={[45,120]} />
+          <meshStandardMaterial color={'#66b6fc'} />
+        </mesh>
+
+        <mesh receiveShadow position={[150,117,-317]}  rotation={[-Math.PI/2,0,0]}>
+          <planeGeometry args={[130,130]} />
           <meshStandardMaterial color={'#66b6fc'} />
         </mesh>
 

@@ -20,7 +20,7 @@ interface ArrowsHandler {
 }
 
 
-const useControls = () => {
+const useControls = (isChatOpen:boolean, isMapOpen:boolean) => {
 
     const {toogleChat} = useControlsStore();
 
@@ -29,8 +29,8 @@ const useControls = () => {
 
 
     useEffect(()=> {
+
         const handleKeyDown = (event:KeyboardEvent) => {
-            console.log(event.code)
             const newArrows = arrowsHandler
             switch(event.code) {
                 case "ArrowUp": 
@@ -54,7 +54,6 @@ const useControls = () => {
                     setArrowsHandler(newArrows);
                     break;
                 case "Space":
-                    console.log('iiii')
                     newArrows.isSpace = true
                     setArrowsHandler(newArrows);
                     break;
@@ -119,6 +118,16 @@ const useControls = () => {
             }
         }
 
+        if(isChatOpen || isMapOpen) {
+            return ()=> {
+                window.removeEventListener('keydown', handleKeyDown);
+                window.removeEventListener('keyup', handleKeyUp);
+                window.removeEventListener('wheel', handleWheel);
+                window.removeEventListener('mousedown', handleMouseDown);
+                window.removeEventListener('mousedown', handleMouseMove);
+                window.removeEventListener('mouseup', handleMouseUp);
+            }
+        }
 
         //#region ADD AND REMOVE EVENTS
         window.addEventListener('keydown', handleKeyDown);
@@ -137,7 +146,7 @@ const useControls = () => {
             window.removeEventListener('mouseup', handleMouseUp);
         }
         //#endregion
-    },[arrowsHandler, mouseHandler])
+    },[arrowsHandler, mouseHandler, isChatOpen, isMapOpen])
 
 
     const haveJumped = () => {

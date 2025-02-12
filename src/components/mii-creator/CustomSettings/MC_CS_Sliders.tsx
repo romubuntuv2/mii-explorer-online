@@ -1,9 +1,11 @@
 import { MiiEyes, MiiFaceElement } from '@/r3f/mii/MiiRendered'
 import { useMiiCreatorStore } from '@/stores/MiiCreatorStore'
 import { usePocketBaseStore } from '@/stores/PocketBaseStore'
+import { useSoundsStore } from '@/stores/SoundsStore'
 import { MyColors } from '@/styles/colors'
 import { MC_StyleContainer } from '@/styles/globalStyles'
 import { FindMovesSVG } from '@/svgs/mii-creator/movesSVG'
+import { motion } from 'motion/react'
 import { RecordModel } from 'pocketbase'
 import React from 'react'
 import styled from 'styled-components'
@@ -11,6 +13,7 @@ import styled from 'styled-components'
 const MC_CS_Sliders = () => {
 
     const {getType} = usePocketBaseStore()
+
     const {selectedElement, selectedTypeID, changeDistBetw, changeVerticalPos, changeRotation, changeShrink, changeScale} = useMiiCreatorStore();
 
 
@@ -29,6 +32,7 @@ return <MainContainer>
 
 const Slider = ({startIcon, endIcon, value, onChangeFunction}:{startIcon:string, endIcon:string,value:number,onChangeFunction:(value:number, getType:(id:string) => (RecordModel|undefined)) => void}) => {
     
+    const {play, stop} = useSoundsStore() 
     const {getType} = usePocketBaseStore()
 
     return <SliderContainer>
@@ -37,7 +41,8 @@ const Slider = ({startIcon, endIcon, value, onChangeFunction}:{startIcon:string,
         </SVGContainer>
 
     <InputSliderContainer> 
-        <InputSlider type='range' value={value*100} onChange={(e) => {onChangeFunction(Number(e.target.value)/100,getType)}}  min={0} max={100}/>
+        <InputSlider whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.05 }} onHoverStart={()=> {play('menuHoover')}} onHoverEnd={()=> {stop('menuHoover')}} 
+        type='range' value={value*100} onChange={(e) => {onChangeFunction(Number(e.target.value)/100,getType)}}  min={0} max={100}/>
     </InputSliderContainer>
     <SVGContainer>
          <SVG  viewBox='0 0 50 50'   ><FindMovesSVG text={endIcon} /></SVG>
@@ -79,6 +84,7 @@ const InputSliderContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: none;
 `
 
 
@@ -86,13 +92,13 @@ const InputSliderContainer = styled.div`
 
 
 
-const InputSlider = styled.input`
+const InputSlider = styled(motion.input)`
   appearance: none;
   width: 100%;
   height: 12px;
   border-radius: 9999px;
   background: #ffffff;
-  cursor: pointer;
+cursor: none;
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -102,6 +108,10 @@ const InputSlider = styled.input`
     border-radius: 9999px;
     background: ${MyColors.darkBlue};
     box-shadow: none;
+    :hover {
+        width: 25.2px;
+        height: 42px;
+    }
   }
 
   &::-moz-range-thumb {
@@ -111,6 +121,10 @@ const InputSlider = styled.input`
     border-radius: 9999px;
     background: ${MyColors.darkBlue};
     box-shadow: none;
+    :hover {
+        width: 25.2px;
+        height: 42px;
+    }
   }
 `;
 

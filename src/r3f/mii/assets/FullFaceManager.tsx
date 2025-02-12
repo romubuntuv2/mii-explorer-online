@@ -28,11 +28,11 @@ const FullFaceManager = ({mii, bone}:{mii:Mii,bone:Object3D}) => {
   </Suspense>
 
   <Suspense>
-    <MakeupAsset bone={bone} miiElement={mii.makeups} />
+    <MakeupAsset bone={bone} miiElement={mii.makeups}  headID={mii.head.elementID} />
   </Suspense>
 
   <Suspense>
-    <MakeupAsset bone={bone} miiElement={mii.wrinkles} />
+    <MakeupAsset bone={bone} miiElement={mii.wrinkles} headID={mii.head.elementID}/>
   </Suspense>
 
   <NoseAsset bone={bone} miiElement={mii.nose} />

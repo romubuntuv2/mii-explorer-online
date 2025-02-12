@@ -1,17 +1,22 @@
 'use client'
 
+import LoadingPage from '@/components/loading/LoadingPage'
 import MC_CustomSettings from '@/components/mii-creator/MC_CustomSettings'
 import MC_Menu from '@/components/mii-creator/MC_Menu'
+import ResortButton from '@/components/utils/ResortButton'
 import WiiCursor from '@/components/utils/WiiCursorHook'
 import CanvaMiiCreator from '@/r3f/canvasContainers/CanvaMiiCreator'
 import MiiRendered from '@/r3f/mii/MiiRendered'
+import { useMainMenuStore } from '@/stores/MainMenuStore'
 
 
 import { useMiiCreatorStore } from '@/stores/MiiCreatorStore'
 import { usePocketBaseStore } from '@/stores/PocketBaseStore'
+import { useSoundsStore } from '@/stores/SoundsStore'
 import { FullPageContainer } from '@/styles/globalStyles'
-import React, { useEffect } from 'react'
-import styled, { keyframes } from 'styled-components'
+import { useRouter } from 'next/navigation'
+import React, { Suspense, useEffect } from 'react'
+import styled from 'styled-components'
 
 
 
@@ -19,61 +24,83 @@ import styled, { keyframes } from 'styled-components'
 
 const MiiCreatorPage = () => {
 
+  const router = useRouter()
+  const {menu, changeMenu} = useMainMenuStore()
   const {fetch, getInitIdByElement, types, isLoading} = usePocketBaseStore()
-  const {initMii, mii} = useMiiCreatorStore();
+  const {initMii, mii, saveMii} = useMiiCreatorStore();
+
+  const {playLoop, play,stop} = useSoundsStore();
+  
+
+  const handleSaveAndBack = () => {
+    saveMii(mii);
+    play('miiFinished');
+    changeMenu("ModeMenu")
+    stop('miiCustom')
+    play('title')
+    router.push('/');
+  }
+
+
 
 
   useEffect(()=>{
-    fetch();
+    if(menu == "TransitionToCustom") {
+      playLoop("miiCustom");
+      fetch();
+    } else {
+      router.push('/')
+    }
   },[])
+
+
 
   useEffect(()=> {
     if(isLoading) return
     initMii(getInitIdByElement, types[0].id);
   },[isLoading])
 
-  return isLoading ? <PageContainer/>
+  return isLoading  ? <LoadingPage/>
     : 
     <PageContainer>
 
-      {/* <WiiCursor/> */}
+      <WiiCursor/>
 
-{/* <AbsolutePageContainerUP> */}
       <Absolute_MC_Menu>
         <MC_Menu  />
       </Absolute_MC_Menu>
-      {/* <CustomContainer>
-        <LeftContainer>
-        </LeftContainer>
-        <RightContainer>
-          <MC_CustomSettings />
-        </RightContainer>
-      </CustomContainer> */}
-    {/* </AbsolutePageContainerUP> */}
+
 
     <Absolute_MC_CustomSettings >
       <MC_CustomSettings />
     </Absolute_MC_CustomSettings>
 
     <AbsolutePageContainer>
-      <CanvaMiiCreator width='100%' height='100%' position={[0,0,0]} >
-            <MiiRendered mii={mii}  msg='' animationString='Idle.001' />
+      <CanvaMiiCreator width='100%' height='100%'  >
+        <Suspense>
+        <MiiRendered mii={mii}  msg='' animationString='directIdle' />
+        </Suspense>
       </CanvaMiiCreator>
     </AbsolutePageContainer>
 
 
+    <ResortButtonDiv onClick={()=> handleSaveAndBack()}  >
+    <ResortButton iconID='back' scale={1} text='Save' />
+    </ResortButtonDiv>
+
     </PageContainer>
 }
 
-const AbsolutePageContainer = styled.div`
+const ResortButtonDiv = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  top: 80vh;
+  left: 10vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `
-const AbsolutePageContainerUP = styled.div`
-  z-index: 2;
+
+const AbsolutePageContainer = styled.div`
   position: absolute;
   top: 0;
   left: 0;
@@ -88,6 +115,11 @@ const Absolute_MC_Menu = styled.div`
   width: 96vw;
   top: 0;
   left: 2vw;
+  pointer-events: none;
+
+> * {
+  pointer-events: auto;
+}
 `
 
 const Absolute_MC_CustomSettings = styled.div`
@@ -98,37 +130,15 @@ const Absolute_MC_CustomSettings = styled.div`
   top: 10vh;
   left: 30vw;
   display: flex;
-  /* background-color: red; */
-`
-
-
-
-
-const MenuContainer = styled.div`
-  height: 9%;
-`
-
-const CustomContainer = styled.div`
-  height: 91%;
-  display: flex;
-
-`
-
-const LeftContainer = styled.div`
-  flex:1;
-`
-
-const RightContainer = styled.div`
-  flex: 1.5;
+  pointer-events: none;
 `
 
 
 
 
 
-const PageContainer = styled(FullPageContainer)`
 
-`
+const PageContainer = styled(FullPageContainer)``
 
 
 

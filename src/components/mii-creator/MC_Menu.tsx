@@ -5,6 +5,8 @@ import styled from 'styled-components'
 import SVGContainer from '../utils/SVGContainer'
 import { useMiiCreatorStore } from '@/stores/MiiCreatorStore'
 import { usePocketBaseStore } from '@/stores/PocketBaseStore'
+import { useSoundsStore } from '@/stores/SoundsStore'
+import { motion } from 'motion/react'
 
 
 
@@ -13,6 +15,7 @@ import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 const MC_Menu = () => {
 
   const {types}= usePocketBaseStore()
+  const {play, stop} = useSoundsStore()
   const { selectedTypeID, setSelectedType } = useMiiCreatorStore();
 
 
@@ -21,7 +24,8 @@ const MC_Menu = () => {
         <MenuContainer>
           {types.map((type) => {
             const isselected:boolean = (selectedTypeID == type.id)
-            return <MenuIcon key={type.id} isselected={isselected.toString()} onClick={()=>{setSelectedType(type.id)}}>
+            return <MenuIcon as={motion.div} whileTap={{ scale: 0.95 }} whileHover={{scale:1.05}} onHoverStart={()=> {play('menuHoover')}} onHoverEnd={()=> {stop('menuHoover')}} 
+            key={type.id} isselected={isselected.toString()} onClick={()=>{setSelectedType(type.id)}}>
             <SVGContainer  element={type}  />
           </MenuIcon>
           })}
@@ -39,7 +43,7 @@ const MenuIcon = styled.div<{isselected: string}>`
   background-color: white;
   margin-left: ${props => props.isselected=="true"? "2px" : "7px"};
   margin-right: ${props => props.isselected=="true"? "2px" : "7px"};
-  border: ${props => props.isselected=="true"? "5px solid"+"#5EB9E5" : "none"};
+  border: ${props => props.isselected=="true"? "5px solid"+MyColors.darkBlue : "none"};
 `
 const MenuContainer = styled.div`
     display: flex;

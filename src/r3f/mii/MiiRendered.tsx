@@ -9,8 +9,8 @@ import HeadAsset from './assets/HeadAsset'
 import FullFaceManager from './assets/FullFaceManager'
 import { SkeletonUtils } from 'three/examples/jsm/Addons.js'
 import { useFrame, useGraph } from '@react-three/fiber'
-import { MC_StyleContainer } from '@/styles/globalStyles'
 import styled from 'styled-components'
+import { MyColors } from '@/styles/colors'
 
 
 
@@ -70,25 +70,44 @@ const MiiRendered = ({mii, msg, animationString}:{mii:Mii, msg:string, animation
 
   //ANIMATIONS
   const mixer = useMemo(() => new THREE.AnimationMixer(clonedSkeleton), [clonedSkeleton])
-  const {animations:AllAnimations} = useFBX("/animations/Animations.fbx");
+  // const {animations:AllAnimations} = useFBX("/animations/Animations.fbx");
+  const {animations:happyIdleAnim} = useFBX("/animations/HappyIdle.fbx");
+  const {animations:bowAnim} = useFBX("/animations/Bow.fbx");
+  const {animations:danceAnim} = useFBX("/animations/Dance.fbx");
+  const {animations:GreetingAnim} = useFBX("/animations/Greeting.fbx");
+  const {animations:idleAnim} = useFBX("/animations/Idle.fbx");
+  const {animations:jumpAnim} = useFBX("/animations/Jumping.fbx");
+  const {animations:runAnim} = useFBX("/animations/Run.fbx");
+  const {animations:walkAnim} = useFBX("/animations/Walking.fbx");
+  
   const actions = useMemo(() => {
     const newActions: { [key: string]: THREE.AnimationAction } = {}
-    AllAnimations.forEach((clip: THREE.AnimationClip) => {
-      newActions[clip.name] = mixer.clipAction(clip)
-    })
+    newActions['happyIdle']= mixer.clipAction(happyIdleAnim[0])
+    newActions['bow']= mixer.clipAction(bowAnim[0])
+    newActions['dance']= mixer.clipAction(danceAnim[0])
+    newActions['greeting']= mixer.clipAction(GreetingAnim[0])
+    newActions['idle']= mixer.clipAction(idleAnim[0])
+    newActions['jump']= mixer.clipAction(jumpAnim[0])
+    newActions['run']= mixer.clipAction(runAnim[0])
+    newActions['walk']= mixer.clipAction(walkAnim[0])
     return newActions
-  }, [mixer, AllAnimations])
+  }, [mixer, happyIdleAnim])
 
 
   useEffect(() => {
-    if (actions[animationString]) {
-      actions[animationString].reset().fadeIn(0.5).play()
+    if(animationString == "directIdle") {
+      actions['idle'].reset().play()
       return () => {
-        actions[animationString].fadeOut(0.5)
+        actions['idle'].fadeOut(0.1)
       }
     } else {
-      console.warn(`Animation "${animationString}" not found`)
+    actions[animationString].reset().fadeIn(0.5).play()
+    return () => {
+      actions[animationString].fadeOut(0.5)
     }
+    }
+
+
   }, [animationString, actions])
 
 
@@ -96,13 +115,16 @@ const MiiRendered = ({mii, msg, animationString}:{mii:Mii, msg:string, animation
     mixer.update(delta)
   })
 
+
+
+
   return <group ref={group} dispose={null} castShadow>
       {msg.length > 0 ?
-      <Html position={[0,0,0]}
-      occlude
-      >
+      <Html position={[0,0,0]} occlude >
       <Container>
+        <HtmlText>
         {msg}
+        </HtmlText>
       </Container>
       </Html>
       :<></>}
@@ -130,6 +152,7 @@ const MiiRendered = ({mii, msg, animationString}:{mii:Mii, msg:string, animation
             <HairAsset
             miiElement={mii.hair}
             bone={MainNodes.mixamorigHead}
+            miiHead={mii.head}
             />
           </Suspense>
 
@@ -156,13 +179,28 @@ export default MiiRendered
 
 
 
-const Container = styled(MC_StyleContainer)`
+const Container = styled.div`
+  transform: translateX(-100px);
   min-width: 100px;
   min-height: 40px;
   border-width: 5px;
   justify-content: center;
   display: flex;
   align-items: center;
+
+  border-radius: 10px;
+  border: 5px solid white;
+  background-color:rgba(94,185,229,0.4);
+`
+
+const HtmlText = styled.div`
+  font-family: var("--font-ubuntu");
+  font-size: 25px;
+  margin: 10px;
+  color: ${MyColors.darkBlue};
+  font-family: var(--font-ubuntu);
+  -webkit-text-stroke: 5px #fff;
+  paint-order: stroke fill;
 `
 
 useGLTF.preload('/models/Armature_Plane.glb')

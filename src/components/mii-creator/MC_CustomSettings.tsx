@@ -119,6 +119,12 @@ const MainContainer = styled(FullParentContainer)`
     flex-direction: column;
     align-items:center;
     justify-content: space-evenly;
+    pointer-events: none;
+
+> * {
+pointer-events: auto;
+}
+
 `
 
 const SideContainer = styled.div`

@@ -1,9 +1,15 @@
 import { Mii } from "@/r3f/mii/MiiRendered";
 import { socket } from "@/socket/socket";
+import { Socket } from "socket.io-client";
 import { create } from "zustand"
 
 
 interface SocketStore {
+    mySocket:Socket,
+    localMii:Mii|null,
+    isLocalOnly:boolean,
+    setIsLocalOnly:(value:boolean)=>void,
+    setLocalMii:(mii:Mii)=>void,
     users:SocketUser[],
     emitSpawned:(user:SocketUser)=>void;
     emitMove:(newPos:[number, number, number]) => void,
@@ -25,6 +31,15 @@ export interface SocketUser {
 
 
 export const useSocketStore = create<SocketStore>((set) => ({
+    mySocket:socket,
+    localMii:null,
+    isLocalOnly:true,
+    setIsLocalOnly:(value:boolean)=>{
+        set({isLocalOnly:value})
+    },
+    setLocalMii:(mii:Mii)=>{
+        set({localMii:mii})
+    },
     users:[],
     emitSpawned:(user:SocketUser) => {
         socket?.emit('spawn',user)

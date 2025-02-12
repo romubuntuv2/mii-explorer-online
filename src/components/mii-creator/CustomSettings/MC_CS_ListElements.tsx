@@ -1,8 +1,10 @@
 import SVGContainer from '@/components/utils/SVGContainer'
 import { useMiiCreatorStore } from '@/stores/MiiCreatorStore'
 import { usePocketBaseStore } from '@/stores/PocketBaseStore'
+import { useSoundsStore } from '@/stores/SoundsStore'
 import { MyColors } from '@/styles/colors'
 import { MC_StyleContainer } from '@/styles/globalStyles'
+import { motion } from 'motion/react'
 import { RecordModel } from 'pocketbase'
 import React from 'react'
 import styled from 'styled-components'
@@ -10,13 +12,17 @@ import styled from 'styled-components'
 const MC_CS_ListElements = ({list}:{list:RecordModel[]}) => {
 
   const {getType} = usePocketBaseStore();
+  const {play, stop} =useSoundsStore()
   const {selectedElement, changeElement} = useMiiCreatorStore();
+
+  
 
   return (
     <MainContainer>
         {list.map((element, index)=> {
             const selected = element.id==selectedElement(getType).elementID? "isTrue":"caca"
-            return <ElementIcon key={index} selected={selected} onClick={()=> {changeElement(element.id,getType)}} >
+            return <ElementIcon whileTap={{ scale: 0.95 }} whileHover={{scale:1.05}} onHoverStart={()=> {play('menuHoover')}} onHoverEnd={()=> {stop('menuHoover')}}
+            key={index} selected={selected} onClick={()=> {changeElement(element.id,getType)}} >
             <SVGContainer element={element} />
             </ElementIcon>
         })}
@@ -28,7 +34,7 @@ const MC_CS_ListElements = ({list}:{list:RecordModel[]}) => {
 
 
 
-const ElementIcon = styled.div<{selected: string}>`
+const ElementIcon = styled(motion.div)<{selected: string}>`
   height: 80px;
   aspect-ratio: 1/1;
   border-radius: 20%;

@@ -7,6 +7,7 @@ import { create } from 'zustand';
 interface MiiCreatorStore {
     mii:Mii,
     savedMiis:Mii[],
+    saveMii:(mii:Mii)=>void,
     selectedTypeID:string,
     selectedElement:(getType:(id:string) => (RecordModel|undefined))=>MiiElement|MiiFaceElement|MiiEyes|MiiBody,
     initMii: (getInit:(typeName:string)=>string, initTypeID:string) => void,
@@ -81,12 +82,16 @@ export const useMiiCreatorStore = create<MiiCreatorStore>((set,get) => ({
 
     },
     savedMiis:[],
+    saveMii:(mii:Mii)=> {
+        const {savedMiis} = get()
+        savedMiis.push(mii)
+        set({savedMiis:savedMiis})
+    },
     selectedTypeID:"",
     selectedElement:(getType:(id:string) => (RecordModel|undefined))=>{
         const {selectedTypeID, mii} = get();
         const selectedType = getType(selectedTypeID)
         const elementName = String(selectedType?.name).toLowerCase();
-        console.log(mii)
         return (mii as Mii)[elementName as keyof Mii]
     },
     initMii: (getInit:(typeName:string)=>string, initTypeID:string) => { 

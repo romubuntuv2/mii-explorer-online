@@ -1,29 +1,45 @@
+import { useSoundsStore } from '@/stores/SoundsStore'
 import { TextStyle } from '@/styles/globalStyles'
-import { enterTransition } from '@/styles/motions'
 import { BackIcon } from '@/svgs/main-menu/BackIcon'
 import { BoutonRelou } from '@/svgs/main-menu/BoutonRelou'
 import { SettingSVG } from '@/svgs/main-menu/SettingSVG'
-import {motion} from 'motion/react'
+import { MapSVG } from '@/svgs/mii-verse/MapSVG'
+import {motion, spring} from 'motion/react'
 import React from 'react'
 import styled from 'styled-components'
 
-const ResortButton = ({scale, text, back}:{scale:number, text:string, back:boolean}) => {
+const transition = {duration:0.8, type:spring}
+
+const ResortButton = ({scale, text, iconID}:{scale:number, text:string, iconID:string}) => {
 
     const width = 445*scale;
     const height = 163*scale;
+    const {play, stop} = useSoundsStore()
 
+    const getIcon = ()=> {
+        switch ((iconID)) {
+            case "back":
+                return <BackIcon />
+            case "settings":
+                return  <SettingSVG scale={scale} />
+            case "map":
+                return <MapSVG />
+            default:
+                return <></>
+        }
+    }
 
 
   return <Container 
+  onHoverStart={()=>{play('menuHoover')}} onHoverEnd={()=>{stop('menuHoover')}}
   initial={{opacity:0}}
-  animate={{opacity:1, transition:enterTransition}}
-    exit={{opacity:0, transition:enterTransition}}
+  animate={{opacity:1, transition:transition}}
+exit={{opacity:0, transition:transition}}
   whileHover={{scale:1.1}}
+  whileTap={{scale:0.9}}
   style={{width:width, height:height}}>
     <IconDiv>
-    {back? <BackIcon />
-    : <SettingSVG scale={scale} />
-    }
+    {getIcon()}
     </IconDiv>
     <Button scale={scale}/>
     <TextContainer>

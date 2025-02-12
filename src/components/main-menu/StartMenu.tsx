@@ -6,6 +6,9 @@ import useDimensions from '@/hooks/useDimensions'
 import {AnimatePresence, motion, spring, useMotionValue} from 'motion/react'
 import { useMainMenuStore } from '@/stores/MainMenuStore'
 import { InfoIcon } from '@/svgs/main-menu/InfoIcon'
+import { useSoundsStore } from '@/stores/SoundsStore'
+import Information from '../utils/Information'
+import { WalkerSVG } from '@/svgs/main-menu/WalkSVG'
 
 
 const BLUE = '#13A7CE'
@@ -14,14 +17,15 @@ const ORANGE = '#DA9023'
 const ORANGE_GREY = "#BBBBBB"
 const BLUE_GREY = "#D9D9D9"
 
-const WAITING_TIME =2
+const WAITING_TIME =0.5
 
 const StartMenu = () => {
 
-    const {vwANDvh,vw, vh} = useDimensions()
-    const {changeMenu, isStartMenu} = useMainMenuStore();
+    const {vwANDvh,vw, vh, width:innerWidth} = useDimensions()
+    const {changeMenu,isStartMenu} = useMainMenuStore();
+    const {play, stop} = useSoundsStore();
 
-
+    const [showingInfos, setShowingInfos] = useState<boolean>(false);
 
     //#region SPACE AND CLICK HANDLERS
 
@@ -67,23 +71,34 @@ const StartMenu = () => {
         }
     }, [])
 
+
     useEffect(()=> {
-        if(click && space){
+        if(click && space && !showingInfos){
+            play('start')
             changeMenu("Transition");
             setTimeout(()=> {
                 changeMenu("ModeMenu");
-            },2000)
+            },800)
         }
-    },[click,space])
+    },[click,space,showingInfos])
 
 
+    const handleShowInfos =() => {
+        play("menuIn");
+        setShowingInfos(true)
+    }
 
   return <AnimatePresence>{isStartMenu() &&
     <>
-    <InfoContainer
+
+    <Information isCredit={true} showing={showingInfos}  setShowingInfos={setShowingInfos} /> 
+
+
+    <InfoContainer onClick={()=> handleShowInfos()}  onHoverStart={()=>{play('menuHoover')}} onHoverEnd={()=>{stop('menuHoover')}}
     initial={{opacity:0}}
-    animate={{opacity:1, transition:{delay:WAITING_TIME, duration:2}}}
-    exit={{opacity:0, transition:{duration:2}}}
+    animate={{opacity:1, transition:{delay:WAITING_TIME, type:spring,duration:2}}}
+    exit={{opacity:0, transition:{type:spring,duration:1}}}
+    whileHover={{scale:1.1}}
     >
         <InfoLogo>
             <InfoIcon/>
@@ -95,50 +110,54 @@ const StartMenu = () => {
 
     <TitlesContainer
         initial={{opacity:0}}
-        animate={{opacity:1, transition:{delay:WAITING_TIME, duration:2}}} 
-        exit={{opacity:0, transition:{duration:2}}}
+        animate={{opacity:1, transition:{type:spring,delay:WAITING_TIME, duration:2}}} 
+        exit={{opacity:0, transition:{type:spring,duration:1}}}
     >
         <motion.div
     initial={{x:3000}}
-    animate={{x:0, transition:{delay:2+WAITING_TIME, duration:2, bounce:0.2, type:spring}}}
-    exit={{x:-3000, transition:{duration:2, bounce:0.2, type:spring}}}
+    animate={{x:0, transition:{delay:2+WAITING_TIME, duration:2, type:spring}}}
+    exit={{x:-3000, transition:{duration:1, type:spring}}}
     >
         <Titles  haveStroke={false} scale={1}/>
         </motion.div>
     </TitlesContainer>
 
 
-        <PressText as={motion.div} initial={{opacity:0}}animate={{opacity:1, transition:{delay:WAITING_TIME, duration:2}}}  exit={{opacity:0, transition:{duration:2}}}
+        <PressText as={motion.div} initial={{opacity:0}}animate={{opacity:1, transition:{delay:WAITING_TIME, duration:2}}}  exit={{opacity:0, transition:{duration:1}}}
         top={vh(70)}>
             Press Space and Right Click to Start !
         </PressText>
 
-        <Line1 as={motion.div} initial={{opacity:0}} animate={{opacity:1, transition:{delay:WAITING_TIME, duration:2}}}  exit={{opacity:0, transition:{duration:2}}}
+        <Line1 as={motion.div} initial={{opacity:0}} animate={{opacity:1, transition:{delay:WAITING_TIME, type:spring, duration:2}}}  exit={{opacity:0, transition:{type:spring,duration:1}}}
         color={"#787878"} top={vh(70)} left={"0px"} width={vw(100)} height={vh(1.5)} />
-        <Line2 as={motion.div} initial={{opacity:0}} animate={{opacity:1, transition:{delay:WAITING_TIME, duration:2}}} 
+        <Line2 as={motion.div} initial={{opacity:0}} animate={{opacity:1, transition:{delay:WAITING_TIME, type:spring,duration:2}}} 
         exit={{opacity:0}}
         style={{backgroundColor:SpaceColor}} top={vh(71.5)} left="0" width={vw(100)} height={vh(1.5)} />
         <Line3 
-        as={motion.div} initial={{opacity:0}} animate={{opacity:1, transition:{delay:WAITING_TIME, duration:2}}} 
+        as={motion.div} initial={{opacity:0}} animate={{opacity:1, transition:{type:spring,delay:WAITING_TIME, duration:2}}} 
         exit={{opacity:0}}
         style={{backgroundColor:RightClickColor}} top={vh(73)} left="0" width={vw(100)} height={vh(1.5)} />
 
-        <OuterCircle as={motion.div} initial={{opacity:0}} animate={{opacity:1, transition:{delay:WAITING_TIME, duration:2}}}  exit={{opacity:0, transition:{duration:2}}}
+        <OuterCircle as={motion.div} initial={{opacity:0}} animate={{opacity:1, transition:{delay:WAITING_TIME,type:spring, duration:2}}}  exit={{opacity:0, transition:{type:spring,duration:1}}}
         top={vwANDvh(-5,70)} left={vw(80)}  width={vw(9.5)} height={vw(9.5)}>
-        <CenterCircle as={motion.div} initial={{opacity:0}} animate={{opacity:1}} transition={{delay:WAITING_TIME, duration:2}} />
+        <CenterCircle as={motion.div} initial={{opacity:0}} animate={{opacity:1}} transition={{delay:WAITING_TIME,type:spring, duration:1}}>
+            <WalkerSVG scale={1 * (innerWidth/1280)}  />
+        </CenterCircle>
         </OuterCircle>
 
-        <HalfCircle  as={motion.div}  initial={{opacity:0}} animate={{opacity:1, transition:{delay:WAITING_TIME, duration:2}}}  exit={{opacity:0, transition:{duration:2}}}
+
+
+        <HalfCircle  as={motion.div}  initial={{opacity:0}} animate={{opacity:1, transition:{delay:WAITING_TIME, type:spring,duration:2}}}  exit={{opacity:0, transition:{type:spring,duration:1}}}
         style={{backgroundColor:RightClickColor}} index={5}  top={vwANDvh(0,70)} left={vw(77.7)}  width={vw(15)} height={vw(7.5)}/>
         <HalfCircle as={motion.div} initial={{opacity:0}} 
-        animate={{opacity:1, transition:{delay:WAITING_TIME, duration:2}}}  exit={{opacity:0, transition:{duration:2}}}
+        animate={{opacity:1, transition:{delay:WAITING_TIME, type:spring,duration:2}}}  exit={{opacity:0, transition:{type:spring,duration:1}}}
         style={{backgroundColor:SpaceColor}} index={7}  top={vwANDvh(0,70)} left={vw(78.75)}  width={vw(13)} height={vw(6.5)}/>
 
 
     <CopyrightCont
     initial={{opacity:0}}
-    animate={{opacity:1, transition:{delay:WAITING_TIME, duration:2}}}
-    exit={{opacity:0, transition:{duration:2}}}
+    animate={{opacity:1, transition:{delay:WAITING_TIME, type:spring,duration:2}}}
+    exit={{opacity:0, transition:{duration:1}}}
     >
         <CopyrightText>© 2009 - 2025 Nintendo </CopyrightText>
     </CopyrightCont>
@@ -168,6 +187,7 @@ const InfoLogo = styled.div`
     aspect-ratio: 1;
     width: auto;
 `
+
 
 
 interface CustumDivProps {
@@ -215,7 +235,10 @@ const CenterCircle = styled.div`
     border-radius: 100px;
     width: 8vw;
     height: auto;
-    background-color: #787878;
+    background-color: #e6e6e6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `
 
 const HalfCircle = styled(CustumDiv)<{index:number}>`
@@ -228,7 +251,7 @@ const HalfCircle = styled(CustumDiv)<{index:number}>`
 
 
 const PressText = styled(TextStyle)<{top:string}>`
-    z-index: 10;
+    z-index: 9;
     position: absolute;
     top: ${props=>props.top};
     width: 100vw;

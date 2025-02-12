@@ -1,28 +1,50 @@
 'use client'
-import LoadingPage from '@/components/loading/LoadingPage';
 import BackgroundCanva from '@/components/main-menu/BackgroundCanva';
-import ExplorationMenu from '@/components/main-menu/Exploration';
-import ModeMenu from '@/components/main-menu/ModeMenu';
-import StartMenu from '@/components/main-menu/StartMenu';
 import WiiCursor from '@/components/utils/WiiCursorHook';
-import { useMainMenuStore } from '@/stores/MainMenuStore';
-import { useProgress } from '@react-three/drei';
-import React, { useEffect } from 'react'
+import React, { Suspense} from 'react'
 import styled from 'styled-components'
 import {motion} from 'motion/react'
 import MainMenuHUD from '@/components/main-menu/MainMenuHUD';
+import { useSoundsStore } from '@/stores/SoundsStore';
+import useDeviceType from '@/utils/useDevice';
+
+import { MyColors } from '@/styles/colors';
+
 
 const HomePage = () => {
 
+  const {playLoop, titleMusic} = useSoundsStore()
+  const {isComputer} = useDeviceType()
 
+  const handleStartTitleMusic = () => {
+    if(titleMusic.sound.paused) {
+      playLoop('title')
+    }
+  }
 
-  const {progress } = useProgress();
+  return !isComputer ? 
+  <Container
+  initial={{opacity:0}}
+  animate={{opacity:1}}
+  transition={{duration:2}}
+  >
+    <TutorialContainer  >
+        <TutorialContainerElement onClick={()=> window.open("https://me.romubuntu.dev")}>
+          <Text> Sorry, this website is made for computers only.</Text>
+          <Text>Maybe, I will do a mobile update.</Text>
+          <Text>See you again on your computeur.</Text>
+          <Text> @romubuntu</Text>
+        </TutorialContainerElement>
+    </TutorialContainer>
 
-
-
-
-  return progress !== 100 ? <LoadingPage progress={progress}/> :
-    <Container
+      <BackgroundContainerCanva>
+      <Suspense>
+      <BackgroundCanva />
+      </Suspense>
+      </BackgroundContainerCanva>
+  </Container>
+  : 
+  <Container onClick={()=> handleStartTitleMusic()}
     initial={{opacity:0}}
     animate={{opacity:1}}
     transition={{duration:2}}
@@ -34,7 +56,9 @@ const HomePage = () => {
       
 
       <BackgroundContainerCanva>
+      <Suspense>
       <BackgroundCanva />
+      </Suspense>
       </BackgroundContainerCanva>
 
 
@@ -61,6 +85,51 @@ const Container = styled(motion.div)`
   overflow-x: none;
   overflow-y: none;
 `
+
+const Text = styled(motion.a)`
+  text-align: center;
+  font-family: var(--font-ubuntu);
+    color: #5A5A5A;
+
+    paint-order: stroke fill;
+    user-select: none;
+`
+
+
+const TutorialContainer = styled.div`
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
+const TutorialContainerElement = styled(motion.div)`
+  z-index: 10;
+  height: 70%;
+  width: 60%;
+  aspect-ratio: 1;
+  background-color: white;
+  border-radius: 20px;
+  outline: 5px solid ${MyColors.backgroundBlue};
+  outline-offset: -10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: var(--font-ubuntu);
+  color: #5A5A5A;
+  font-size: 24px;
+  -webkit-text-stroke: 5px #fff;
+  paint-order: stroke fill;
+  user-select: none;
+`
+
 
 
 

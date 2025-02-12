@@ -6,10 +6,10 @@ import styled from 'styled-components'
 import WuhuIsland from '../env/WuhuIsland'
 import { WuhuIslandBlender } from '../env/WuhuIslandBlender'
 import { Physics } from '@react-three/rapier'
-import { EffectComposer } from '@react-three/postprocessing'
+import { EffectComposer, Noise } from '@react-three/postprocessing'
 import { ACESFilmicToneMapping, SRGBColorSpace } from 'three'
 
-const CanvaMiiCreator = ({width, height, position, children}:{width:string, height:string, position:[number, number, number],children:JSX.Element}) => {
+const CanvaMiiCreator = ({width, height, children}:{width:string, height:string,children:JSX.Element}) => {
   
   function CameraOffset() {
     const { camera } = useThree()
@@ -40,25 +40,27 @@ const CanvaMiiCreator = ({width, height, position, children}:{width:string, heig
     camera={{near:0.1, far:100000}}
     >
       <CameraOffset/>
-      <EffectComposer><></></EffectComposer>
+          <EffectComposer>
+          <Noise opacity={0} />
+          </EffectComposer>
     
         <Environment preset='sunset'  environmentIntensity={0.4} />
 
 
         <directionalLight 
         color={'#FCA966'}
-  position={[1000, 1500, 1000]}
-  intensity={5}
-  castShadow
-  shadow-mapSize={[8192, 8192]}
-  shadow-camera-left={-1000}
-  shadow-camera-right={1000}
-  shadow-camera-top={1000}
-  shadow-camera-bottom={-1000}
-  shadow-camera-near={1}
-  shadow-camera-far={4000}
-  shadow-bias={-0.0001}
-/>
+        position={[1000, 1500, 1000]}
+        intensity={5}
+        castShadow
+        shadow-mapSize={[8192, 8192]}
+        shadow-camera-left={-1000}
+        shadow-camera-right={1000}
+        shadow-camera-top={1000}
+        shadow-camera-bottom={-1000}
+        shadow-camera-near={1}
+        shadow-camera-far={4000}
+        shadow-bias={-0.0001}
+        />
 
 
 
@@ -69,13 +71,13 @@ const CanvaMiiCreator = ({width, height, position, children}:{width:string, heig
       </group>
       </Physics>
 
-            <Center>
-            <group scale={1.5} position={position}>
-              <group position={[0,-0.6,0]}>
+            {/* <Center> */}
+            <group scale={1.5} position={[0,1.66,0]}>
+              {/* <group position={[0,0,0]}> */}
               {children}
-              </group>
+              {/* </group> */}
             </group>
-            </Center>
+            {/* </Center> */}
             <ambientLight intensity={0.5} />
             <OrbitControls  enablePan={false} target={[0, 0, 0]}
             minDistance={2} maxDistance={10} />

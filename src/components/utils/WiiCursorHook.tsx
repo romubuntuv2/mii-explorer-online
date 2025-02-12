@@ -6,6 +6,7 @@ const WiiCursor = () => {
 
     const x = useMotionValue(0);
     const y = useMotionValue(0);
+    const scale = useMotionValue(1);
 
 
     useEffect(()=> {
@@ -16,9 +17,17 @@ const WiiCursor = () => {
             if(e.clientY+60 < window.innerHeight) {
                 y.set(e.clientY-5);
             }
-
         }
+
+        const handlePress = (down:boolean) => {
+            if(down) scale.set(0.9)
+            else scale.set(1)
+        }
+
         window.addEventListener('mousemove',handleMove);
+        window.addEventListener('mousedown',()=>handlePress(true));
+        window.addEventListener('mouseup',()=>handlePress(false));
+
         return ()=> {
             window.removeEventListener('mousemove',handleMove);
         }
@@ -26,7 +35,8 @@ const WiiCursor = () => {
 
 
     // return <></>
-  return <ContImage style={{width:48, height:48, x:x, y:y}} >
+  return <ContImage 
+  style={{width:48, height:48,scale:scale, x:x, y:y}} >
     <StyledImage src={"/img/wiiCursor.png"}
     height={"54"}
     width={"48"}
@@ -36,7 +46,7 @@ const WiiCursor = () => {
 
 const ContImage = styled(motion.div)`
     position: absolute;
-    z-index: 10;
+    z-index: 12;
     -moz-user-select: -moz-none;
     -khtml-user-select: none;
     -webkit-user-select: none;
