@@ -17,7 +17,7 @@ const CAMERA_INERTIA = 0.95;
 const MiiControlled = ({mii}:{mii:Mii}) => {
 
   const {isChatOpen, isMapOpen, setMsg, msg, tpPosition, setTP} = useControlsStore();
-  const {emitMove, emitRotate, emitMessage, emitAnimation, mySocket} = useSocketStore()
+  const {emitMove, emitRotate, emitMessage, emitAnimation, mySocket, isSpawned} = useSocketStore()
 
   const rb = useRef<RapierRigidBody>(null);
   const mesh = useRef<Group>(null);
@@ -41,7 +41,7 @@ const MiiControlled = ({mii}:{mii:Mii}) => {
 
 
   useEffect(()=> {
-    if(msg == undefined || !mySocket.connected) return
+    if(msg == undefined || !mySocket.connected || !isSpawned) return
     if(msg.length > 0) {
       setInterval(()=> {
         setMsg("");
@@ -187,7 +187,7 @@ const MiiControlled = ({mii}:{mii:Mii}) => {
 
   
   useFrame(()=> {
-    if(!rb.current || !mesh.current) return
+    if(!rb.current || !mesh.current  || !isSpawned) return
 
     const rbPosition = vec3(rb.current.translation());
     HandleCamera(rbPosition)

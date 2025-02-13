@@ -8,6 +8,8 @@ interface SocketStore {
     mySocket:Socket,
     localMii:Mii|null,
     isLocalOnly:boolean,
+    isSpawned:boolean,
+    toogleSpawn:()=>void,
     setIsLocalOnly:(value:boolean)=>void,
     setLocalMii:(mii:Mii)=>void,
     users:SocketUser[],
@@ -34,6 +36,10 @@ export const useSocketStore = create<SocketStore>((set) => ({
     mySocket:socket,
     localMii:null,
     isLocalOnly:true,
+    isSpawned:false,
+    toogleSpawn:()=>{
+        set({isSpawned:true})
+    },
     setIsLocalOnly:(value:boolean)=>{
         set({isLocalOnly:value})
     },

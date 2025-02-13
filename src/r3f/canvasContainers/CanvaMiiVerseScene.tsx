@@ -15,7 +15,7 @@ import WuhuIslandNotBlender from '../env/WuhuIslandNotBlender'
 
 const CanvaMiiVerseScene = () => {     
 
-  const {emitSpawned,updateUsers, mySocket,users, localMii, isLocalOnly} = useSocketStore()
+  const {emitSpawned,updateUsers, mySocket,users, localMii, isLocalOnly, toogleSpawn} = useSocketStore()
 
 
 
@@ -26,6 +26,7 @@ const CanvaMiiVerseScene = () => {
       console.log("emit")
       const user:SocketUser = {name:'dimitri', mii:localMii, id:mySocket.id, position:[0,0,0], pointToLookAt:[0,0,0], msg:"",currentAnimation:"idle"}
       emitSpawned(user)
+      toogleSpawn()
     }
     
     mySocket.on('connection', onConnect)
