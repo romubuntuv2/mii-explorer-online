@@ -45,7 +45,7 @@ const ElementIcon = styled(motion.div)<{selected: string}>`
 
 
 const MainContainer = styled(MC_StyleContainer)`
-    width: 80%;
+    max-width: 80%;
 
     background-color: ${MyColors.backgroundBlue};
     max-height: 50%;

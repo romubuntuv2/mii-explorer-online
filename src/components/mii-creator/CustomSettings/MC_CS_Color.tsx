@@ -15,9 +15,9 @@ const MC_CS_Color = () => {
     const {changeColor, selectedElement} = useMiiCreatorStore();
 
 
+
 return <MainContainer as={motion.div} whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.05 }} onHoverStart={()=> {play('menuHoover')}} onHoverEnd={()=> {stop('menuHoover')}}  >
-            <ColorPickerContainer 
-            >
+            <ColorPickerContainer >
                 <CustumHexColorPicker
                 color={(selectedElement(getType) as MiiElement).color} onChange={(e) => changeColor(e,getType)}  />
             </ColorPickerContainer>

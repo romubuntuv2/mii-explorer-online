@@ -28,7 +28,7 @@ export interface MiiEyes extends MiiFaceElement {
 
 export interface MiiBody {
   elementID:string,
-  upColor:string,
+  color:string,
   downColor:string
 }
 
@@ -115,7 +115,9 @@ const MiiRendered = ({mii, msg, animationString}:{mii:Mii, msg:string, animation
     mixer.update(delta)
   })
 
-
+  useEffect(()=> {
+    console.log(mii)
+  },[mii.human.color])
 
 
   return <group ref={group} dispose={null} castShadow>

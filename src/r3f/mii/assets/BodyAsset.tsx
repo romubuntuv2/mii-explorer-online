@@ -43,7 +43,7 @@ const BodyAsset = ({miiElement, skeleton}:{miiElement:MiiBody, skeleton:Skeleton
         castShadow
         receiveShadow
     >
-        <meshStandardMaterial color={index==0?miiElement.upColor:miiElement.downColor} />
+        <meshStandardMaterial color={index==0?miiElement.color:miiElement.downColor} />
     </skinnedMesh>
     ))}
     </group>

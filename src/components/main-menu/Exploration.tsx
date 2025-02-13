@@ -208,8 +208,8 @@ const MiiImage = styled(motion.div)`
     height: 30%;
     border-radius: 10px;
     border: 5px solid white;
-    margin-left: 2.5%;
-    margin-right: 2.5%;
+    margin-left: 3.75%;
+    margin-right: 3.75%;
     background-color: #F0F5F5;
     box-shadow: 0px 5px 5px #5A5A5A;
 `
@@ -248,8 +248,8 @@ const MiisContainer = styled.div`
     justify-content: space-around;
     flex-wrap: wrap;
 
-overflow-y: auto;
-white-space: nowrap;
+    overflow-y: auto;
+    white-space: nowrap;
     
 `
 
