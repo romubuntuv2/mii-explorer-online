@@ -20,9 +20,9 @@ interface ArrowsHandler {
 }
 
 
-const useControls = (isChatOpen:boolean, isMapOpen:boolean) => {
+const useControls = () => {
 
-    const {toogleChat} = useControlsStore();
+    const {toogleChat, toogleEmote, isChatOpen, isEmoteOpen, isMapOpen} = useControlsStore();
 
     const [mouseHandler, setMouseHandler] = useState<MouseHandler>({isDown:false, wheelDelta:0,movement:{x:0, y:0}});
     const [arrowsHandler, setArrowsHandler] = useState<ArrowsHandler>({isDown:false,isLeft:false, isRight:false, isUp:false, isShift:false, isKeyT:false,isSpace:false})
@@ -34,6 +34,14 @@ const useControls = (isChatOpen:boolean, isMapOpen:boolean) => {
             const newArrows = arrowsHandler
             switch(event.code) {
                 case "ArrowUp": 
+                    newArrows.isUp = true
+                    setArrowsHandler(newArrows);
+                    break;
+                case "KeyZ": 
+                    newArrows.isUp = true
+                    setArrowsHandler(newArrows);
+                    break;
+                case "KeyW": 
                     newArrows.isUp = true
                     setArrowsHandler(newArrows);
                     break;
@@ -53,12 +61,20 @@ const useControls = (isChatOpen:boolean, isMapOpen:boolean) => {
                     newArrows.isShift = true
                     setArrowsHandler(newArrows);
                     break;
+                case "ShiftLeft":
+                    newArrows.isShift = true
+                    setArrowsHandler(newArrows);
+                    break;
                 case "Space":
                     newArrows.isSpace = true
                     setArrowsHandler(newArrows);
                     break;
                 case "KeyT":
                     toogleChat();
+                    break;
+                case "KeyE":
+                    toogleEmote();
+                    break;
                 default:
                     break;
             }
@@ -67,6 +83,14 @@ const useControls = (isChatOpen:boolean, isMapOpen:boolean) => {
             const newArrows = arrowsHandler
             switch(event.code) {
                 case "ArrowUp": 
+                    newArrows.isUp = false
+                    setArrowsHandler(newArrows);
+                    break;
+                case "KeyZ": 
+                    newArrows.isUp = false
+                    setArrowsHandler(newArrows);
+                    break;
+                case "KeyW": 
                     newArrows.isUp = false
                     setArrowsHandler(newArrows);
                     break;
@@ -83,6 +107,10 @@ const useControls = (isChatOpen:boolean, isMapOpen:boolean) => {
                     setArrowsHandler(newArrows);
                     break;
                 case "ShiftRight":
+                    newArrows.isShift = false
+                    setArrowsHandler(newArrows);
+                    break;
+                case "ShiftLeft":
                     newArrows.isShift = false
                     setArrowsHandler(newArrows);
                     break;
@@ -118,7 +146,7 @@ const useControls = (isChatOpen:boolean, isMapOpen:boolean) => {
             }
         }
 
-        if(isChatOpen || isMapOpen) {
+        if(isChatOpen || isMapOpen || isEmoteOpen) {
             return ()=> {
                 window.removeEventListener('keydown', handleKeyDown);
                 window.removeEventListener('keyup', handleKeyUp);
@@ -146,7 +174,7 @@ const useControls = (isChatOpen:boolean, isMapOpen:boolean) => {
             window.removeEventListener('mouseup', handleMouseUp);
         }
         //#endregion
-    },[arrowsHandler, mouseHandler, isChatOpen, isMapOpen])
+    },[arrowsHandler, mouseHandler, isChatOpen, isMapOpen, isEmoteOpen])
 
 
     const haveJumped = () => {

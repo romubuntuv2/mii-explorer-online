@@ -34,10 +34,11 @@ const Information = ({showing, setShowingInfos, isCredit}:{showing:boolean, setS
       } else {
         return <TextContainer >
         <Text >Use the Mouse to move the Camera </Text>
-        <Text >Press the Up Arrow to move your Mii</Text>
+        <Text >Press the Up Arrow or Z/W to move your Mii</Text>
         <Text >Press the Shift to run </Text>
         <Text >Press Space to jump</Text>
         <Text >Press T to open the chat input </Text>
+        <Text >Press E to open the emotes </Text>
 
         </TextContainer>
       }

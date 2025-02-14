@@ -16,8 +16,8 @@ const CAMERA_INERTIA = 0.95;
 
 const MiiControlled = ({mii}:{mii:Mii}) => {
 
-  const {isChatOpen, isMapOpen, setMsg, msg, tpPosition, setTP} = useControlsStore();
-  const {emitMove, emitRotate, emitMessage, emitAnimation, mySocket, isSpawned} = useSocketStore()
+  const {setMsg, msg, tpPosition, setTP, animation, stopAnimation} = useControlsStore();
+  const {emitMove, emitRotate, isLocalOnly, emitMessage, emitAnimation, mySocket, isSpawned} = useSocketStore()
 
   const rb = useRef<RapierRigidBody>(null);
   const mesh = useRef<Group>(null);
@@ -28,7 +28,7 @@ const MiiControlled = ({mii}:{mii:Mii}) => {
   })
 
   const {camera, gl} = useThree();
-  const {mouseHandler, arrowsHandler, haveJumped} = useControls(isChatOpen, isMapOpen);
+  const {mouseHandler, arrowsHandler, haveJumped} = useControls();
 
   const [currentAnimation, setAnimation] = useState<string>("idle")
   const [isGrounded, setIsGrounded] = useState<boolean>(false);
@@ -187,10 +187,18 @@ const MiiControlled = ({mii}:{mii:Mii}) => {
 
   
   useFrame(()=> {
-    if(!rb.current || !mesh.current  || !isSpawned) return
+    if(!rb.current || !mesh.current  || ((!isSpawned && !isLocalOnly))) return
 
     const rbPosition = vec3(rb.current.translation());
     HandleCamera(rbPosition)
+
+    if(animation.animating) {
+      if(arrowsHandler.isUp) {
+        stopAnimation();
+      } else {
+        return
+      }
+    }
     HandleMoveMiiRB(rb.current)
     HandleMeshRotation(mesh.current,rbPosition );
     HandleJump(rb.current);
@@ -207,6 +215,13 @@ const MiiControlled = ({mii}:{mii:Mii}) => {
     }
   },[tpPosition])
 
+  useEffect(()=> {
+    if(animation.animating) {
+      applyAnimation(animation.animationString)
+    }
+  }, [animation])
+
+  
 
   return <group scale={1.5}>
     <RigidBody ref={rb} 

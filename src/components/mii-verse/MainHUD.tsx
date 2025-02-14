@@ -12,10 +12,18 @@ import { useRouter } from 'next/navigation'
 import Map from './Map'
 import Information from '../utils/Information'
 
+// const emotes = ['happyIdle','bow', 'dance', 'greeting']
+const emotes = [
+  {anim:'happyIdle', name:"Happy"},
+  {anim:'bow', name:"Bow"},
+  {anim:'dance', name:"Dance"},
+  {anim:'greeting', name:"Greeting"},
+]
+
 const MainHUD = () => {
 
   const router = useRouter()
-  const {isChatOpen, toogleMap, toogleChat, setMsg:sendMsg} = useControlsStore();
+  const {isChatOpen, isEmoteOpen, toogleMap, toogleChat, toogleEmote, setMsg:sendMsg, startAnimation} = useControlsStore();
   const {play, stop} = useSoundsStore()
 
   const [showInfos, setShowInfos] = useState(true);
@@ -30,6 +38,12 @@ const MainHUD = () => {
   const handleMainMenu = ()=> {
     stop("explorer");
     router.push('/')
+  }
+
+  const handleEmote = (anim:string) => {
+    toogleEmote();
+    startAnimation(anim)
+
   }
 
   useEffect(()=> {
@@ -63,6 +77,31 @@ const MainHUD = () => {
       </InputChatContainer>
       }
       </AnimatePresence>
+
+      <AnimatePresence>
+      {isEmoteOpen &&
+      <EmoteContainer
+      whileHover={{scale:1.1}}
+      initial={{opacity:0, width:0}}
+      animate={{opacity:1, width:"50%"}}
+      exit={{opacity:0, width:0}}
+      >
+        {emotes.map((emote, i) => {
+          return <Emote key={i}
+          onClick={()=> {handleEmote(emote.anim)}}
+          whileHover={{scale:1.1}} whileTap={{scale:0.9}}
+          >  
+          {emote.name}
+          </Emote>
+        })}
+      </EmoteContainer>
+  
+      }
+
+      </AnimatePresence>
+
+
+
       </DownContainer>
       <UpContainer></UpContainer>
 
@@ -88,7 +127,29 @@ const MainHUD = () => {
   )
 }
 
+const EmoteContainer= styled(motion.div)`
+  width: 40%;
+  height: 100%;
+  display: flex;
+  z-index: 8;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  border: 5px solid white;
+  border-radius: 10px;
+  background-color:rgba(94,185,229,0.4);
+`
 
+const Emote = styled(motion.div)`
+  font-family: var("--font-ubuntu");
+  font-size: 48px;
+  color: #5A5A5A;
+  font-family: var(--font-ubuntu);
+  -webkit-text-stroke: 5px #fff;
+  paint-order: stroke fill;
+  user-select: none;
+
+`
 
 
 const TitleButton = styled(motion.div)`
