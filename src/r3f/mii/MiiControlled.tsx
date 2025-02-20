@@ -45,7 +45,7 @@ const MiiControlled = ({mii}:{mii:Mii}) => {
     if(msg.length > 0) {
       setInterval(()=> {
         setMsg("");
-      },5000)
+      },10000)
     }
     emitMessage(msg);
   },[msg])
