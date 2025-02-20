@@ -17,7 +17,7 @@ const HomePage = () => {
   const {isComputer} = useDeviceType()
 
   const handleStartTitleMusic = () => {
-      playLoop('title')
+    playLoop('title')
   }
 
   useEffect(()=> {

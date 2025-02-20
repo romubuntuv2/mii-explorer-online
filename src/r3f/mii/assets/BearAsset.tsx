@@ -44,7 +44,7 @@ const BearAsset  = ({miiElement, bone}:{miiElement:MiiElement, bone:Object3D}) =
         castShadow
         receiveShadow
     >
-        <meshBasicMaterial transparent={element.name == "Bear_1"?true:false} opacity={element.name == "Bear_1"?0:1} side={DoubleSide} color={miiElement.color} />
+        <meshStandardMaterial transparent={element.name == "Bear_1"?true:false} opacity={element.name == "Bear_1"?0:1} side={DoubleSide} color={miiElement.color} />
     </mesh>
     </group>
 

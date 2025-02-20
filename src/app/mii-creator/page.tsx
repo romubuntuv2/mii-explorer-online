@@ -37,7 +37,6 @@ const MiiCreatorPage = () => {
     play('miiFinished');
     changeMenu("ModeMenu")
     stop('miiCustom')
-    play('title')
     router.push('/');
   }
 
