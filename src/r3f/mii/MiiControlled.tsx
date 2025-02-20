@@ -33,6 +33,7 @@ const MiiControlled = ({mii}:{mii:Mii}) => {
   const [currentAnimation, setAnimation] = useState<string>("idle")
   const [isGrounded, setIsGrounded] = useState<boolean>(false);
   const [canMove, setCanMove] = useState(true);
+  const [interval, setNewInterval] = useState<NodeJS.Timeout | null>(null);
 
   const applyAnimation = (animationString:string) => {
     setAnimation(animationString)
@@ -43,9 +44,11 @@ const MiiControlled = ({mii}:{mii:Mii}) => {
   useEffect(()=> {
     if(msg == undefined || !mySocket.connected || !isSpawned) return
     if(msg.length > 0) {
-      setInterval(()=> {
+      if(interval) clearInterval(interval);
+      const newInterval = setInterval(()=> {
         setMsg("");
       },10000)
+      setNewInterval(newInterval);
     }
     emitMessage(msg);
   },[msg])
