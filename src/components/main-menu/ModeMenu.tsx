@@ -55,7 +55,7 @@ const ModeMenu = () => {
               exit={{opacity:0, transition:transition}}
               whileHover={{scale:1.1}} whileTap={{scale:0.9}}
         >
-          <ModeText>Explorer the Wuhu Island</ModeText>
+          <ModeText>Explore the Wuhu Island</ModeText>
           <ModeImgContainer>
           <ModeImg src={'/img/explorerMIi.png'} />
           </ModeImgContainer>

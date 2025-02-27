@@ -72,7 +72,7 @@ const ExplorationMenu = () => {
     const GenerateMiiImage = () => {
         if(isSessionMiis){
         if(savedMiis.length == 0) {
-            return <TextStyle style={{fontSize:'24px'}} >Create your own Mii with Mii Creatore before</TextStyle>
+            return <TextStyle style={{fontSize:'24px'}} >Create your own Mii with Mii Creatore to have Session Mii</TextStyle>
         } else {
         return savedMiis.map((mii, index) => { //PAGE DE 12
             return <MiiImage key={index} onClick={()=>handleClickMii(mii)} onHoverStart={()=>{play('menuHoover')}} onHoverEnd={()=>{stop('menuHoover')}}

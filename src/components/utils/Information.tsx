@@ -24,12 +24,12 @@ const Information = ({showing, setShowingInfos, isCredit}:{showing:boolean, setS
     const text = ()=> {
       if(isCredit) {
         return <TextContainer >
-        <Text onClick={()=>handleOpen('https://me.romubuntu.dev')} whileHover={{scale:1.1}}  style={{fontSize:"30px"}}>Concept, Developpement and Design by @romubuntu</Text>
+        <Text onClick={()=>handleOpen('https://me.romubuntu.dev')} whileHover={{scale:1.1}}  style={{fontSize:"30px"}}>Concept, Developement and Design by @romubuntu</Text>
         <Text onClick={()=>handleOpen(joye)} whileHover={{scale:1.1}} >Mii Asset 3D models created by @JoeyC</Text>
         <Text onClick={()=>handleOpen(modelUhu)} whileHover={{scale:1.1}} >Wuhu Island 3D model created by @Nelib</Text>
         <Text onClick={()=>handleOpen(mod)} whileHover={{scale:1.1}} >Wuhu Island Environnement models created by @GlitchingNo</Text>
-        <Text onClick={()=>handleOpen("https://www.nintendo.com/")} whileHover={{scale:1.1}} >This website is freely inspired by the Wii Sport Resort by Nintendo. It use the soundstracks and the artistic direction from the game</Text>
-        <Text whileHover={{scale:1.1}} style={{fontSize:"20px"}}>Release February 2024. VERSION 1.0</Text>
+        <Text onClick={()=>handleOpen("https://www.nintendo.com/")} whileHover={{scale:1.1}} >This website is freely inspired by the Wii Sport Resort by Nintendo. It uses the soundstrack and the artistic direction from the game</Text>
+        <Text whileHover={{scale:1.1}} style={{fontSize:"20px"}}>Released February 2024. VERSION 1.0</Text>
         </TextContainer>
       } else {
         return <TextContainer >
