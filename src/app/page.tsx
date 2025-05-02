@@ -9,6 +9,7 @@ import { useSoundsStore } from '@/stores/SoundsStore';
 import useDeviceType from '@/utils/useDevice';
 
 import { MyColors } from '@/styles/colors';
+import RMBTIcon from '@/components/utils/RMBTIcon';
 
 
 const HomePage = () => {
@@ -30,6 +31,8 @@ const HomePage = () => {
   animate={{opacity:1}}
   transition={{duration:2}}
   >
+      <RMBTIcon/>
+    
     <TutorialContainer  >
         <TutorialContainerElement onClick={()=> window.open("https://me.romubuntu.dev")}>
           <Text> Sorry, this website is made for computers only.</Text>
@@ -44,6 +47,7 @@ const HomePage = () => {
       <BackgroundCanva />
       </Suspense>
       </BackgroundContainerCanva>
+
   </Container>
   : 
   <Container onClick={()=> handleStartTitleMusic()}
@@ -52,6 +56,8 @@ const HomePage = () => {
     transition={{duration:2}}
     > 
       <WiiCursor/>
+      <RMBTIcon/>
+
 
 
       <MainMenuHUD/>
@@ -64,10 +70,10 @@ const HomePage = () => {
       </BackgroundContainerCanva>
 
 
-
     </Container>
   
 }
+
 
 
 

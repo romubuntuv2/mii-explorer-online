@@ -4,6 +4,7 @@ import LoadingPage from '@/components/loading/LoadingPage'
 import MC_CustomSettings from '@/components/mii-creator/MC_CustomSettings'
 import MC_Menu from '@/components/mii-creator/MC_Menu'
 import ResortButton from '@/components/utils/ResortButton'
+import RMBTIcon from '@/components/utils/RMBTIcon'
 import WiiCursor from '@/components/utils/WiiCursorHook'
 import CanvaMiiCreator from '@/r3f/canvasContainers/CanvaMiiCreator'
 import MiiRendered from '@/r3f/mii/MiiRendered'
@@ -62,7 +63,7 @@ const MiiCreatorPage = () => {
   return isLoading  ? <LoadingPage/>
     : 
     <PageContainer>
-
+      <RMBTIcon/>
       <WiiCursor/>
 
       <Absolute_MC_Menu>

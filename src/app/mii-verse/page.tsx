@@ -2,6 +2,7 @@
 
 import LoadingPage from '@/components/loading/LoadingPage'
 import MainHUD from '@/components/mii-verse/MainHUD'
+import RMBTIcon from '@/components/utils/RMBTIcon'
 import CanvaMiiVerseScene from '@/r3f/canvasContainers/CanvaMiiVerseScene'
 import { usePocketBaseStore } from '@/stores/PocketBaseStore'
 import { useSocketStore } from '@/stores/SocketStore'
@@ -35,6 +36,7 @@ const MiiVersePage = () => {
 
   return isLoading ? <LoadingPage/> : 
   <MainContainer>
+      <RMBTIcon/>
       <MainHUD/>
       <CanvaMiiVerseScene/>
     </MainContainer>

@@ -58,7 +58,7 @@ const ContImage = styled(motion.div)`
     -webkit-user-drag: none;
     -webkit-user-select: none;
     -ms-user-select: none;
-      pointer-events: none;
+    pointer-events: none;
 `
 
 const StyledImage = styled.img`
