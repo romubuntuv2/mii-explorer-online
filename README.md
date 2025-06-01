@@ -1,36 +1,22 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏝️ Mii Online Explorer 🚶
 
-## Getting Started
+<code><img height="20" alt="typescript" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/typescript/typescript.png"></code>
+<code><img height="20" alt="nextjs" src="https://static-00.iconduck.com/assets.00/nextjs-icon-2048x1234-pqycciiu.png"></code>
+<code><img height="20" alt="threejs" src="https://canada1.discourse-cdn.com/flex035/uploads/threejs/optimized/2X/e/e4f86d2200d2d35c30f7b1494e96b9595ebc2751_2_1016x1024.png"></code>
+<code><img height="20" alt="socketio" src="https://joscor.com/wp-content/uploads/2014/10/SOCKETIOICON.gif"></code>
+<code><img height="20" alt="pocketbase" src="https://images.seeklogo.com/logo-png/46/2/pocketbase-logo-png_seeklogo-465584.png"></code>
 
-First, run the development server:
+[![Home Menu Mii Online Explorer](public/readme/interface.gif)](https://mii-explorer-online.romubuntu.dev)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Découvrez un site web inspiré de l'interface 🖥️ de *Wii Sport Resort* ! 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[![Mii Maker](public/readme/interface.gif)](https://mii-explorer-online.romubuntu.dev)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Créez votre propre Mii grâce à mon 🎨 créateur d'avatar intégré !
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+[![Wuhu Island Explorer](public/readme/explorer.gif)](https://mii-explorer-online.romubuntu.dev)
 
-## Learn More
+Découvrez la 🏝️ Wuhu Island et visitez totalement l'île seul ou avec 🧑‍🤝‍🧑 vos amis ! 
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
