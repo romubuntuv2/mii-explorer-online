@@ -3,8 +3,8 @@
 <code><img height="20" alt="typescript" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/typescript/typescript.png"></code>
 <code><img height="20" alt="nextjs" src="https://static-00.iconduck.com/assets.00/nextjs-icon-2048x1234-pqycciiu.png"></code>
 <code><img height="20" alt="threejs" src="https://canada1.discourse-cdn.com/flex035/uploads/threejs/optimized/2X/e/e4f86d2200d2d35c30f7b1494e96b9595ebc2751_2_1016x1024.png"></code>
-<code><img height="20" alt="socketio" src="public/readme/socketlogo"></code>
-<code><img height="20" alt="pocketbase" src="public/readme/pblogo"></code>
+<code><img height="20" alt="socketio" src="public/readme/socketlogo.png"></code>
+<code><img height="20" alt="pocketbase" src="public/readme/pblogo.png"></code>
 
 [![Home Menu Mii Online Explorer](public/readme/interface.gif)](https://mii-explorer-online.romubuntu.dev)
 
