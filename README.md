@@ -10,7 +10,7 @@
 
 Découvrez un site web inspiré de l'interface 🖥️ de *Wii Sport Resort* ! 
 
-[![Mii Maker](public/readme/interface.gif)](https://mii-explorer-online.romubuntu.dev)
+[![Mii Maker](public/readme/maker.gif)](https://mii-explorer-online.romubuntu.dev)
 
 Créez votre propre Mii grâce à mon 🎨 créateur d'avatar intégré !
 
