@@ -76,12 +76,21 @@ const MiiControlled = ({mii}:{mii:Mii}) => {
       const angleX = getCameraAngleMovement(mouvX, gl.domElement.clientWidth);
       const angleY = getCameraAngleMovement(mouvY, gl.domElement.clientHeight);
 
-  
-      camera.position.sub(cameraTarget)
+      // Sauvegarder la position actuelle de la caméra
+      const oldPosition = camera.position.clone();
+      
+      camera.position.sub(cameraTarget);
       camera.position.applyAxisAngle(new Vector3(0, 1, 0), -angleX);
       camera.position.applyAxisAngle(new Vector3(1, 0, 0).applyQuaternion(camera.quaternion), -angleY);
       camera.position.add(cameraTarget);
-      camera.lookAt(cameraTarget);
+
+      // Vérifier si la nouvelle position de la caméra est sous le joueur
+      if (camera.position.y < cameraTarget.y) {
+        // Si c'est le cas, restaurer l'ancienne position
+        camera.position.copy(oldPosition);
+      } else {
+        camera.lookAt(cameraTarget);
+      }
     }
     if(mouseHandler.isDown) {
       cameraStatus.current.velocity.x =mouseHandler.movement.x
