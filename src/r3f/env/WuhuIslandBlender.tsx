@@ -10,7 +10,7 @@ export function WuhuIslandBlender({
 }: {
   position: [number, number, number];
 }) {
-  const { nodes, materials } = useGLTF("/models/WuhuIslandBlender1.glb");
+  const { nodes, materials:gltfMaterials } = useGLTF("/models/WuhuIslandBlender1.glb");
 
   const cloudsRef = useRef<Mesh>(null);
 
@@ -20,26 +20,26 @@ export function WuhuIslandBlender({
     }
   });
 
-  // const [materials, setMaterials] = useState<{[name:string]:Material}>(gltfMaterials);
+  const [materials, setMaterials] = useState<{[name:string]:Material}>(gltfMaterials);
 
-  // useEffect(()=> {
-  //   const newMaterials = gltfMaterials;
-  //   Object.keys(newMaterials).forEach(materialName => {
-  //     if(materialName.includes('tree') || materialName.includes('cloud') || materialName.includes('water')) {
-  //       const material = newMaterials[materialName];
-  //       material.opacity = 1;
-  //       material.transparent = true;
-  //       material.depthWrite = false;
-  //       material.depthTest = true;
-  //       material.side = THREE.DoubleSide;
-  //       material.alphaTest = 0.5;
-  //       material.blending = THREE.NormalBlending;
-  //       material.premultipliedAlpha = true;
-  //     }
-  //   });
-  //   setMaterials(newMaterials);
+  useEffect(()=> {
+    const newMaterials = gltfMaterials;
+    Object.keys(newMaterials).forEach(materialName => {
+      if(materialName.includes('tree')) {
+        const material = newMaterials[materialName];
+        material.opacity = 1;
+        material.transparent = true;
+        material.depthWrite = true;
+        material.depthTest = true;
+        material.side = THREE.DoubleSide;
+        material.alphaTest = 0.5;
+        material.blending = THREE.NormalBlending;
+        material.premultipliedAlpha = true;
+      }
+    });
+    setMaterials(newMaterials);
 
-  // },[gltfMaterials])
+  },[gltfMaterials])
 
 
 
